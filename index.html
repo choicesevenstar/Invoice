@@ -2,1152 +2,637 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Choice Seven Star · Khata & Bill</title>
-    <!-- html2canvas for bill download & jszip for backup -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Choice Seven Star · Khata</title>
+    <!-- html2canvas for bill download -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- JSZip for backup/restore -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
+        :root {
+            --primary-bg: #f5f8ff;
+            --secondary-bg: #ffffff;
+            --primary-brand: #0a1a3f;
+            --text-dark: #121f3d;
+            --text-light: #5a6b8c;
+            --accent-blue: #4a6dff;
+            --border-color: #e8eef8;
+            --danger: #d93025;
+            --success: #1e8e3e;
+            --top-bar-height: 60px;
+            --bottom-nav-height: 70px;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        body {
-            background: #f4f7fd;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* SPLASH SCREEN */
-        .splash-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
+        html, body {
             height: 100%;
-            background: #0a1a3f;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            transition: opacity 0.6s ease;
-            color: white;
+            overflow: hidden;
+            background: var(--primary-bg);
+            color: var(--text-dark);
+        }
+
+        /* --- SPLASH SCREEN --- */
+        .splash-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--primary-brand);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 1000; transition: opacity 0.5s ease-in-out; color: white;
         }
         .splash-logo {
-            font-size: 3.5rem;
-            font-weight: 800;
-            letter-spacing: 2px;
-            text-shadow: 0 4px 15px rgba(0,40,120,0.8);
-            margin-bottom: 20px;
+            font-size: 2.5rem; font-weight: 800; letter-spacing: 1px;
             background: linear-gradient(145deg, #ffffff, #b5cbff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-        .splash-sub {
-            font-size: 1.4rem;
-            opacity: 0.9;
-            border-top: 2px solid #ffffff40;
-            padding-top: 16px;
-            width: 240px;
-            text-align: center;
-        }
-        .splash-fade-out {
-            opacity: 0;
-            pointer-events: none;
-        }
+        .splash-sub { font-size: 1rem; opacity: 0.8; margin-top: 10px; }
+        .splash-fade-out { opacity: 0; pointer-events: none; }
 
-        /* main app (hidden initially) */
-        .app-container {
+        /* --- APP SHELL --- */
+        .app-shell {
             display: none;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* --- SIDEBAR --- */
-        .sidebar {
-            width: 260px;
-            background: #0a1a3f;
-            border-right: 1px solid rgba(255,255,255,0.04);
-            display: flex;
+            height: 100%;
             flex-direction: column;
-            padding: 32px 16px;
-            transition: transform 0.3s ease;
-            position: relative;
-            z-index: 50;
-            box-shadow: 4px 0 15px -10px rgba(0,20,50,0.3);
-            border-radius: 0 24px 24px 0;
         }
 
-        .sidebar.collapsed {
-            transform: translateX(-100%);
-        }
-
-        .app-name {
-            font-weight: 700;
-            font-size: 1.8rem;
-            letter-spacing: -0.5px;
-            padding-left: 12px;
-            margin-bottom: 44px;
-            color: white;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.2);
-        }
-        .app-name span {
-            background: rgba(255,255,255,0.1);
-            padding: 4px 10px 6px 10px;
-            border-radius: 40px;
-            font-size: 0.85rem;
-            font-weight: 400;
-            margin-left: 8px;
-            color: #b5c6f0;
-            border: 1px solid rgba(255,255,255,0.15);
-        }
-
-        .nav-item {
-            padding: 14px 20px;
-            margin: 6px 12px;
-            border-radius: 24px;
-            font-weight: 550;
-            color: #d3e0ff;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            border: 1px solid transparent;
-        }
-        .nav-item i { 
-            width: 26px; 
-            font-style: normal; 
-            font-size: 1.3rem;
-        }
-        .nav-item.active {
-            background: #ffffff;
-            color: #0a1a3f;
-            box-shadow: 0 4px 10px -4px rgba(0,0,0,0.2);
-            border: 1px solid rgba(255,255,255,0.6);
-        }
-        .nav-item:hover:not(.active) {
-            background: #1f2e5a;
-            color: white;
-            border-color: rgba(255,255,255,0.15);
-        }
-
-        .menu-toggle {
-            display: none;
-            background: #0a1a3f;
-            border: none;
-            font-size: 2rem;
-            padding: 8px 18px;
-            cursor: pointer;
-            color: white;
-            border-radius: 40px;
-            margin-right: 12px;
-            box-shadow: 0 4px 8px -4px #001133;
-        }
-
-        /* --- MAIN WRAPPER --- */
-        .main-wrapper {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            background: #f5faff;
-        }
-
-        /* TOP BAR with backup/restore buttons */
+        /* TOP BAR */
         .top-bar {
-            background: rgba(255,255,255,0.9);
-            backdrop-filter: blur(8px);
-            padding: 12px 22px;
-            box-shadow: 0 4px 12px -8px rgba(0,30,70,0.15);
+            height: var(--top-bar-height);
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid #ffffff;
-            border-radius: 0 0 28px 28px;
-            margin: 0 4px 4px 4px;
-            width: calc(100% - 8px);
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .page-title {
-            font-size: 1.6rem;
-            font-weight: 650;
-            color: #0a1a3f;
-        }
-        .shop-badge {
-            background: #0a1a3f;
-            padding: 6px 18px;
-            border-radius: 60px;
-            color: white;
-            font-weight: 600;
-            box-shadow: 0 4px 10px -6px #001d6e;
-            font-size: 1.1rem;
-            white-space: nowrap;
-        }
-        .backup-tools {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .backup-btn {
-            background: white;
-            border: 2px solid #0a1a3f;
-            padding: 8px 16px;
-            border-radius: 40px;
-            font-weight: 600;
-            color: #0a1a3f;
-            cursor: pointer;
-            font-size: 0.95rem;
-            transition: 0.1s;
-        }
-        .backup-btn:hover {
-            background: #0a1a3f;
-            color: white;
-        }
-        #restoreFile {
-            display: none;
-        }
-
-        /* main content */
-        .pages-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 28px 26px;
-            scroll-behavior: smooth;
-        }
-
-        /* pages fade */
-        .page {
-            display: none;
-            animation: fadeIn 0.25s ease;
-        }
-        .page.active-page {
-            display: block;
-        }
-        @keyframes fadeIn {
-            0% { opacity: 0.3; transform: translateY(6px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
-        /* statistic cards */
-        .stat-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 24px;
-            margin-bottom: 48px;
-        }
-        .stat-card {
-            background: white;
-            border-radius: 28px;
-            padding: 28px 26px;
-            box-shadow: 0 8px 18px -10px rgba(0,30,70,0.12);
-            transition: all 0.2s;
-            border: 1px solid rgba(255,255,255,0.8);
-        }
-        .stat-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 25px -14px #001c4b;
-        }
-        .stat-label {
-            color: #1e2f50;
-            font-size: 1rem;
-            display: flex;
-            justify-content: space-between;
-        }
-        .stat-number {
-            font-size: 2.6rem;
-            font-weight: 700;
-            color: #0a1a3f;
-            margin-top: 10px;
-        }
-
-        /* client cards */
-        .client-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-        }
-        .client-row {
-            background: white;
-            border-radius: 32px;
-            padding: 22px 28px;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 5px 14px -10px #00103b;
-            transition: 0.15s;
-            border: 1px solid rgba(255,255,255,0.9);
-        }
-        .client-row:hover {
-            box-shadow: 0 12px 22px -16px #00246e;
-        }
-        .client-name {
-            font-weight: 700;
-            font-size: 1.3rem;
-            color: #0a1a3f;
-        }
-        .client-phone {
-            color: #264180;
-            background: #ecf2ff;
-            padding: 6px 18px;
-            border-radius: 60px;
-            font-weight: 500;
-        }
-        .client-pending {
-            background: #ffe8d9;
-            color: #a14500;
-            font-weight: 700;
-            padding: 6px 16px;
-            border-radius: 40px;
-        }
-        .icon-btn {
-            background: #ffffff;
-            border: none;
-            font-size: 1.2rem;
-            padding: 10px 18px;
-            border-radius: 50px;
-            cursor: pointer;
-            color: #0a1a3f;
-            font-weight: 600;
-            box-shadow: 0 3px 8px -6px #001b4e;
-            transition: 0.1s;
-            border: 1px solid #eef4ff;
-        }
-        .icon-btn:hover {
-            background: #f0f5ff;
-            transform: scale(1.02);
-        }
-
-        /* search */
-        .search-bar {
-            background: white;
-            border-radius: 60px;
-            padding: 16px 28px;
-            border: none;
-            box-shadow: 0 4px 12px -10px #001758;
-            width: min(450px,100%);
-            font-size: 1.1rem;
-            margin-bottom: 36px;
-        }
-
-        /* modals navy/white */
-        .modal-overlay {
-            position: fixed;
-            top:0; left:0; width:100%; height:100%;
-            background: rgba(0,0,0,0.15);
-            backdrop-filter: blur(5px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 200;
-        }
-        .modal-card {
-            background: white;
-            border-radius: 48px;
-            width: min(900px, 95%);
-            max-height: 90vh;
-            overflow-y: auto;
-            padding: 38px 36px;
-            box-shadow: 0 30px 40px -30px #000b33;
-            animation: modalSoft 0.2s ease;
-            border: 2px solid #ffffff;
-        }
-        @keyframes modalSoft {
-            0% { opacity: 0.5; transform: scale(0.96); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-        .modal-card h3 {
-            font-size:2rem; 
-            font-weight:700;
-            color: #0a1a3f;
-            margin-bottom:20px;
-        }
-        .input-field {
-            width:100%;
-            padding: 18px 24px;
-            border: 2px solid #dde5f5;
-            border-radius: 60px;
-            font-size:1.1rem;
-            margin-bottom: 20px;
-            background: #f6faff;
-            transition: 0.15s;
-        }
-        .input-field:focus {
-            outline: none;
-            border-color: #0a1a3f;
-            background: white;
-        }
-        .btn-group {
-            display: flex;
-            gap: 16px;
-            margin-top: 32px;
-        }
-        .btn-primary {
-            background: #0a1a3f;
-            color: white;
-            border: none;
-            padding: 16px 28px;
-            border-radius: 60px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            cursor: pointer;
-            flex:1;
-            box-shadow: 0 6px 14px -10px #001038;
-            transition: 0.1s;
-        }
-        .btn-primary:hover { background: #122e60; }
-        .btn-secondary {
-            background: #eef3ff;
-            border: 2px solid #0a1a3f;
-            color: #0a1a3f;
-            padding: 16px 28px;
-            border-radius: 60px;
-            font-weight: 600;
-            cursor: pointer;
-            flex:1;
-        }
-        .btn-secondary:hover { background: white; }
-
-        /* --- ENHANCED BILL CAPTURE AREA --- */
-        .bill-capture-area {
-            background: white;
-            border-radius: 36px;
-            padding: 30px 28px;
-            border: 3px solid #0a1a3f;
-            box-shadow: 0 20px 30px -12px #00165440;
-            margin: 10px 0 25px 0;
-            width: 100%;
-        }
-        .bill-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 3px solid #0a1a3f;
-            padding-bottom: 20px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        .bill-header-left {
-            font-size: 2.2rem;
-            font-weight: 800;
-            color: #0a1a3f;
-            letter-spacing: -0.5px;
-        }
-        .bill-header-right {
-            background: #0a1a3f;
-            color: white;
-            padding: 12px 28px;
-            border-radius: 60px;
-            font-size: 1.3rem;
-            font-weight: 600;
-        }
-        .bill-info-row {
-            display: flex;
-            justify-content: space-between;
-            background: #ecf2fc;
-            padding: 16px 22px;
-            border-radius: 40px;
-            margin-bottom: 25px;
-            font-size: 1.2rem;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        .bill-info-item {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-        .bill-client-details {
+            padding: 0 20px;
             font-size: 1.4rem;
             font-weight: 700;
-            margin-bottom: 25px;
-            padding: 0 10px;
-            color: #0a1a3f;
-        }
-        .bill-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0 12px;
-            margin-bottom: 25px;
-        }
-        .bill-table th {
-            background: #0a1a3f;
-            color: white;
-            padding: 18px 16px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            border-radius: 30px 30px 10px 10px;
-        }
-        .bill-table td {
-            background: #f9fcff;
-            padding: 16px 12px;
-            border-radius: 28px;
-            box-shadow: 0 4px 10px -8px #00247e;
-            vertical-align: middle;
-        }
-        .bill-table input {
-            width: 100%;
-            min-width: 80px;
-            padding: 12px 14px;
-            border-radius: 40px;
-            border: 2px solid #dde5f5;
-            background: white;
-            font-size: 1rem;
-        }
-        .item-name-input {
-            width: 160px;
-        }
-        .remove-row {
-            background: #ffe3e3;
-            border: none;
-            border-radius: 40px;
-            padding: 10px 20px;
-            color: #b00020;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .bill-summary {
-            background: #eaf1ff;
-            padding: 22px 28px;
-            border-radius: 50px;
-            font-size: 1.3rem;
-            border: 2px solid #ffffff;
-        }
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-        }
-        .summary-row.total {
-            font-weight: 800;
-            font-size: 1.6rem;
-            border-top: 2px solid #ffffff;
-            margin-top: 8px;
-            padding-top: 16px;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+            position: relative;
+            z-index: 10;
         }
 
+        /* MAIN CONTENT AREA */
+        .pages-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 24px 16px;
+            padding-bottom: calc(var(--bottom-nav-height) + 24px);
+        }
+        .page { display: none; }
+        .page.active-page { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* BOTTOM NAVIGATION */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--bottom-nav-height);
+            background: var(--secondary-bg);
+            border-top: 1px solid var(--border-color);
+            box-shadow: 0 -4px 20px -10px rgba(0,20,60,0.1);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 100;
+        }
+        .nav-btn {
+            background: none; border: none;
+            display: flex; flex-direction: column; align-items: center;
+            gap: 4px; color: var(--text-light); font-weight: 600;
+            font-size: 0.75rem; transition: color 0.2s;
+        }
+        .nav-btn i { font-size: 1.6rem; font-style: normal; }
+        .nav-btn.active { color: var(--primary-brand); }
+        .nav-btn-add {
+            background: var(--primary-brand);
+            color: white;
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            font-size: 2.2rem;
+            display: flex; align-items: center; justify-content: center;
+            transform: translateY(-20px);
+            box-shadow: 0 6px 15px -4px rgba(10,26,63,0.5);
+            border: 4px solid var(--secondary-bg);
+        }
+
+        /* --- UI COMPONENTS --- */
+        .stat-card {
+            background: var(--secondary-bg);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 6px 15px -8px rgba(0,30,70,0.1);
+            margin-bottom: 16px;
+        }
+        .stat-label { font-size: 0.9rem; color: var(--text-light); font-weight: 500; }
+        .stat-number { font-size: 2rem; font-weight: 700; color: var(--text-dark); margin-top: 8px; }
+
+        .client-card {
+            background: var(--secondary-bg);
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px -8px rgba(0,20,60,0.1);
+        }
+        .client-info .name { font-size: 1.1rem; font-weight: 600; }
+        .client-info .phone { font-size: 0.9rem; color: var(--text-light); margin-top: 2px; }
+        .client-pending { background: #ffe8d9; color: #a14500; font-weight: 700; padding: 6px 12px; border-radius: 30px; font-size: 0.8rem; }
+        
+        .section-title { font-size: 1.3rem; margin-bottom: 16px; font-weight: 700; }
+        
+        .search-bar {
+            width: 100%;
+            background: var(--secondary-bg);
+            border-radius: 30px;
+            padding: 14px 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px -6px #001758;
+            font-size: 1rem;
+            margin-bottom: 24px;
+        }
+        .search-bar:focus { outline: 1px solid var(--primary-brand); }
+
+        .btn {
+            border: none;
+            padding: 16px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            transition: transform 0.1s;
+        }
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background: var(--primary-brand); color: white; }
+        .btn-secondary { background: var(--border-color); color: var(--text-dark); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-icon { display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+        /* --- FULL SCREEN PAGE VIEWS --- */
+        .page-view {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--primary-bg);
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .page-view.active { transform: translateX(0); }
+        .page-view .top-bar {
+            background: var(--secondary-bg);
+            justify-content: space-between;
+        }
+        .page-view .top-bar .back-btn { font-size: 1.5rem; background: none; border: none; }
+        .page-view-content {
+            flex-grow: 1;
+            padding: 24px 16px;
+            overflow-y: auto;
+        }
+        .input-group { margin-bottom: 16px; }
+        .input-group label { display: block; font-weight: 500; margin-bottom: 8px; color: var(--text-light); font-size: 0.9rem; padding-left: 10px; }
+        .input-field {
+            width: 100%;
+            padding: 16px 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            font-size: 1rem;
+            background: var(--secondary-bg);
+        }
+        .input-field:focus { outline: 1px solid var(--primary-brand); }
+        .page-view-actions {
+            padding: 16px;
+            background: var(--secondary-bg);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 12px;
+        }
+
+        /* --- BILL PAGE STYLING --- */
+        .bill-capture-area {
+            background: var(--secondary-bg);
+            border-radius: 20px;
+            padding: 16px;
+            border: 2px solid var(--primary-brand);
+            margin-bottom: 24px;
+        }
+        .bill-header { text-align: center; border-bottom: 2px solid var(--primary-brand); padding-bottom: 12px; margin-bottom: 16px; }
+        .bill-shop-name { font-size: 1.6rem; font-weight: 800; color: var(--primary-brand); }
+        .bill-sub-name { font-size: 0.9rem; color: var(--text-light); }
+        .bill-info { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 16px; color: var(--text-light); }
+        .bill-client-details { font-weight: 600; font-size: 1.1rem; margin-bottom: 20px; }
+        .bill-items-table { width: 100%; border-collapse: collapse; }
+        .bill-items-table th { text-align: left; font-size: 0.8rem; color: var(--text-light); padding-bottom: 8px; }
+        .bill-item-row { border-bottom: 1px solid var(--border-color); }
+        .bill-item-row td { padding: 12px 2px; }
+        .bill-item-row input {
+            width: 100%; border: 1px solid var(--border-color);
+            padding: 8px; border-radius: 8px; font-size: 1rem;
+        }
+        .remove-row-btn { background: #ffe3e3; border: none; color: var(--danger); font-weight: bold; width: 32px; height: 32px; border-radius: 50%; }
+        .bill-summary { background: #eaf1ff; padding: 16px; border-radius: 14px; margin-top: 20px; }
+        .summary-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 1rem; }
+        .summary-row.total { font-weight: 700; font-size: 1.2rem; border-top: 1px solid #d0dfff; margin-top: 8px; padding-top: 8px; }
+        
+        /* TOAST NOTIFICATION */
         .toast {
             position: fixed;
-            bottom: 30px; right: 30px;
-            background: #0a1a3f;
+            bottom: calc(var(--bottom-nav-height) + 20px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 26, 63, 0.9);
             color: white;
-            padding: 16px 32px;
-            border-radius: 80px;
-            box-shadow: 0 8px 18px -14px #000d30;
-            font-weight: 500;
+            padding: 12px 24px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px -5px #000;
             opacity: 0;
-            transition: 0.2s;
+            transition: opacity 0.3s, transform 0.3s;
             z-index: 300;
+            pointer-events: none;
         }
-
-        .profile-card {
-            background: white;
-            border-radius: 42px;
-            padding: 32px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 24px;
-            margin-bottom: 40px;
-            align-items: center;
-            box-shadow: 0 8px 20px -14px #001654;
-        }
-
-        .download-bill-btn {
-            background: #0a1a3f;
-            color: white;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 60px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            cursor: pointer;
-            box-shadow: 0 6px 12px -8px #001d6e;
-            transition: 0.1s;
-            margin-left: 20px;
-        }
-        .download-bill-btn:hover { background: #122e60; }
-
-        @media (max-width: 700px) {
-            .sidebar { position: fixed; height: 100vh; transform: translateX(-100%); border-radius: 0 28px 28px 0; }
-            .sidebar.show { transform: translateX(0); }
-            .menu-toggle { display: block; }
-            .main-wrapper { width: 100%; }
-            .top-bar { padding: 12px; }
-            .pages-container { padding: 20px 14px; }
-            .stat-number { font-size: 2rem; }
-            .bill-table th { font-size: 0.9rem; padding: 12px; }
-            .bill-table td { padding: 10px; }
-            .item-name-input { width: 100px; }
-        }
+        .toast.show { opacity: 1; transform: translate(-50%, -10px); }
     </style>
 </head>
 <body>
-    <!-- SPLASH SCREEN (logo 3s) -->
+    <!-- SPLASH SCREEN -->
     <div class="splash-screen" id="splash">
         <div class="splash-logo">CHOICE SEVEN STAR</div>
-        <div class="splash-sub">QUALITY ONLINE PRODUCTS</div>
-        <div style="margin-top: 40px; font-size: 0.9rem; opacity: 0.6;">INVOICE MANAGEMENT</div>
+        <div class="splash-sub">INVOICE MANAGEMENT</div>
     </div>
 
-    <!-- MAIN APP -->
-    <div class="app-container" id="appContainer">
-        <div class="sidebar" id="sidebar">
-            <div class="app-name">Choice Seven Star <span>Invoice</span></div>
-            <div class="nav-item active" data-page="dashboard"><i>📊</i> Dashboard</div>
-            <div class="nav-item" data-page="clients"><i>👥</i> Clients</div>
-            <div class="nav-item" data-page="addClient"><i>➕</i> Add Client</div>
+    <!-- MAIN APP SHELL -->
+    <div class="app-shell" id="appShell">
+        <div class="top-bar" id="pageTitle">Dashboard</div>
+        <div class="pages-container">
+            <div class="page active-page" id="dashboard-page"></div>
+            <div class="page" id="clients-page"></div>
         </div>
-
-        <div class="main-wrapper">
-            <div class="top-bar">
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <button class="menu-toggle" id="menuToggle">☰</button>
-                    <span class="page-title" id="pageTitle">Dashboard</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-                    <div class="backup-tools">
-                        <button class="backup-btn" id="downloadBackupBtn">⬇️ Backup (ZIP)</button>
-                        <button class="backup-btn" id="restoreBackupBtn">📂 Restore</button>
-                        <input type="file" id="restoreFile" accept=".zip">
-                    </div>
-                    <div class="shop-badge">Choice Seven Star Invoice Management</div>
-                </div>
-            </div>
-            <div class="pages-container" id="pagesContainer">
-                <!-- pages injected -->
-            </div>
+        <div class="bottom-nav">
+            <button class="nav-btn active" data-page="dashboard"><i>📊</i><span>Dashboard</span></button>
+            <button class="nav-btn-add" id="addClientBtn"><span>+</span></button>
+            <button class="nav-btn" data-page="clients"><i>👥</i><span>Clients</span></button>
         </div>
     </div>
-
-    <!-- CLIENT MODAL -->
-    <div class="modal-overlay" id="clientModal">
-        <div class="modal-card" style="max-width:520px;">
-            <h3 id="modalTitle">Add Client</h3>
-            <input type="text" id="clientName" class="input-field" placeholder="Full name">
-            <input type="text" id="clientPhone" class="input-field" placeholder="Phone number">
-            <input type="text" id="clientAddress" class="input-field" placeholder="Address">
-            <div class="btn-group">
-                <button class="btn-secondary" id="cancelClient">Cancel</button>
-                <button class="btn-primary" id="saveClient">Save</button>
-            </div>
-        </div>
+    
+    <!-- PAGE VIEWS -->
+    <div class="page-view" id="clientFormPage">
+        <div class="top-bar"><button class="back-btn" data-close-page="clientFormPage">←</button><span id="clientFormTitle"></span><div style="width: 24px;"></div></div>
+        <div class="page-view-content"><div class="input-group"><label for="clientName">Full Name</label><input type="text" id="clientName" class="input-field"></div><div class="input-group"><label for="clientPhone">Phone Number</label><input type="tel" id="clientPhone" class="input-field"></div><div class="input-group"><label for="clientAddress">Address</label><input type="text" id="clientAddress" class="input-field"></div></div>
+        <div class="page-view-actions"><button class="btn btn-secondary" data-close-page="clientFormPage">Cancel</button><button class="btn btn-primary" id="saveClientBtn">Save Client</button></div>
+    </div>
+    <div class="page-view" id="clientProfilePage">
+        <div class="top-bar"><button class="back-btn" data-close-page="clientProfilePage">←</button><span id="profileName"></span><div style="width: 24px;"></div></div>
+        <div class="page-view-content" id="profileContent"></div>
+        <div class="page-view-actions"><button class="btn btn-primary" id="generateBillBtn">Generate New Bill</button></div>
+    </div>
+    <div class="page-view" id="billPage">
+        <div class="top-bar"><button class="back-btn" data-close-page="billPage">←</button><span id="billPageTitle">Create Bill</span><div style="width: 24px;"></div></div>
+        <div class="page-view-content"><button class="btn btn-icon" id="downloadBillBtn" style="background-color: var(--success); color: white; margin-bottom: 20px;"><span>⬇️</span> Download Bill Image</button><div id="billCaptureArea" class="bill-capture-area"><div class="bill-header"><div class="bill-shop-name">Choice Seven Star</div><div class="bill-sub-name">Khata & Bill</div></div><div class="bill-info"><span id="billIdDisplay"></span><span id="billDateDisplay"></span></div><div class="bill-client-details">Bill to: <span id="billClientName"></span></div><table class="bill-items-table"><thead><tr><th>Item</th><th>Price</th><th>Qty</th><th></th></tr></thead><tbody id="billItemsBody"></tbody></table><div style="text-align: center; margin-top: 16px;"><button id="addItemRowBtn" class="btn btn-secondary" style="width: auto; padding: 8px 24px;">+ Add Item</button></div><div class="bill-summary"><div class="summary-row"><span>Subtotal</span><span id="subtotalView"></span></div><div class="summary-row"><span>Paid</span><span id="paidView"></span></div><div class="summary-row total"><span>Remaining</span><span id="remainingView"></span></div></div></div><div class="input-group" style="margin-top: 24px;"><label for="paidAmount">Amount Paid (₨)</label><input type="number" id="paidAmount" class="input-field" value="0"></div></div>
+        <div class="page-view-actions"><button class="btn btn-secondary" data-close-page="billPage">Cancel</button><button class="btn btn-primary" id="saveBillBtn">Save Bill</button></div>
     </div>
 
-    <!-- BILL MODAL -->
-    <div class="modal-overlay" id="billModal">
-        <div class="modal-card" style="max-width:1000px;">
-            <h3 id="billModalTitle">Choice Seven Star · Invoice</h3>
-            
-            <!-- DOWNLOAD BUTTON -->
-            <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
-                <button class="download-bill-btn" id="downloadBillBtn">⬇️ Download Bill Image</button>
-            </div>
-
-            <!-- BILL CAPTURE AREA -->
-            <div id="billCaptureArea" class="bill-capture-area">
-                <div class="bill-header">
-                    <span class="bill-header-left">Choice Seven Star</span>
-                    <span class="bill-header-right">Khata & Bill</span>
-                </div>
-                <div class="bill-info-row">
-                    <span class="bill-info-item">🧾 <span id="billIdDisplay">INV-001</span></span>
-                    <span class="bill-info-item">📅 <span id="billDateDisplay">2025-02-20</span></span>
-                </div>
-                <div class="bill-client-details">
-                    <span id="billClientName">Client name</span>  ·  <span id="billClientPhone" style="font-weight:400;"></span>
-                </div>
-                <table class="bill-table" id="itemsTable">
-                    <thead><tr><th>Item</th><th>Price (₨)</th><th>Qty</th><th>Total</th><th></th></tr></thead>
-                    <tbody id="billItemsBody"></tbody>
-                </table>
-                <div style="margin: 15px 0 20px 0;">
-                    <button class="btn-secondary" id="addItemRow" style="width: auto; padding: 12px 30px;">+ Add product</button>
-                </div>
-                <div class="bill-summary">
-                    <div class="summary-row"><span>Subtotal</span><span id="subtotalView">₨ 0</span></div>
-                    <div class="summary-row"><span>Paid</span><span id="paidView">₨ 0</span></div>
-                    <div class="summary-row total"><span>Remaining</span><span id="remainingView">₨ 0</span></div>
-                </div>
-            </div>
-
-            <div style="display: flex; gap: 20px; align-items: center; margin: 20px 0 10px;">
-                <span style="font-weight:600;">Paid Amount (₨):</span>
-                <input type="number" id="paidAmount" value="0" style="width:180px; padding:14px 20px; border-radius:60px; border:2px solid #0a1a3f; font-size:1.1rem;">
-            </div>
-            <div class="btn-group">
-                <button class="btn-secondary" id="cancelBill">Cancel</button>
-                <button class="btn-primary" id="saveBill">Save Bill</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="toast" id="toast">Saved</div>
+    <div class="toast" id="toast"></div>
 
     <script>
-        (function() {
-            // ----- SPLASH SCREEN -----
-            const splash = document.getElementById('splash');
-            const appContainer = document.getElementById('appContainer');
+    (function() {
+        // ----- APP INITIALIZATION -----
+        const splash = document.getElementById('splash');
+        const appShell = document.getElementById('appShell');
+        setTimeout(() => {
+            splash.classList.add('splash-fade-out');
             setTimeout(() => {
-                splash.classList.add('splash-fade-out');
-                setTimeout(() => {
-                    splash.style.display = 'none';
-                    appContainer.style.display = 'flex';
-                }, 600);
-            }, 3000);
+                splash.style.display = 'none';
+                appShell.style.display = 'flex';
+                renderPage('dashboard');
+            }, 500);
+        }, 2000);
 
-            // ----- APP DATA -----
-            let data = { clients: [] };
+        // ----- STATE & DATA MANAGEMENT -----
+        let data = { clients: [] };
+        let currentClientId = null;
+        let currentBillClientId = null;
+        let editingBillId = null;
+        let currentBillItems = [];
+        
+        function loadData() {
+            const stored = localStorage.getItem('cssKhataApp');
+            if (stored) { try { data = JSON.parse(stored); } catch (e) { console.error("Failed to parse data", e); data = { clients: [] }; } }
+            if (!data.clients) data.clients = [];
+        }
+        function saveData() { localStorage.setItem('cssKhataApp', JSON.stringify(data)); }
+        loadData();
 
-            function loadData() {
-                const stored = localStorage.getItem('cssKhata');
-                if (stored) { try { data = JSON.parse(stored); } catch { } }
-                if (!data.clients) data.clients = [];
-            }
-            function saveData() { localStorage.setItem('cssKhata', JSON.stringify(data)); }
-            loadData();
+        // ----- UTILS -----
+        const formatPKR = (amount) => '₨ ' + Math.round(amount).toLocaleString('en-IN');
+        const showToast = (msg) => { const t = document.getElementById('toast'); t.innerText = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); };
+        const generateBillId = () => 'INV-' + Date.now().toString().slice(-6);
 
-            function formatPKR(amount) { return '₨ ' + Math.round(amount).toLocaleString('en-PK'); }
-            function showToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.style.opacity = '1'; setTimeout(() => t.style.opacity = '0', 1800); }
-            function generateBillId() { return 'INV-' + Math.floor(Math.random()*10000) + '-' + Date.now().toString().slice(-4); }
+        // ----- DOM ELEMENTS & PAGE VIEW HANDLING -----
+        const pageTitleEl = document.getElementById('pageTitle');
+        function openPage(pageId) { document.getElementById(pageId)?.classList.add('active'); }
+        function closePage(pageId) { document.getElementById(pageId)?.classList.remove('active'); }
+        document.querySelectorAll('[data-close-page]').forEach(btn => {
+            btn.addEventListener('click', () => closePage(btn.dataset.closePage));
+        });
 
-            const sidebar = document.getElementById('sidebar');
-            const menuToggle = document.getElementById('menuToggle');
-            menuToggle.addEventListener('click', ()=> { sidebar.classList.toggle('show'); });
-
-            const pagesContainer = document.getElementById('pagesContainer');
-            const pageTitleEl = document.getElementById('pageTitle');
-            const navItems = document.querySelectorAll('.nav-item');
-
-            const clientModal = document.getElementById('clientModal');
-            const billModal = document.getElementById('billModal');
-            const cancelClient = document.getElementById('cancelClient');
-            const cancelBill = document.getElementById('cancelBill');
-            const saveClientBtn = document.getElementById('saveClient');
-            const saveBillBtn = document.getElementById('saveBill');
-            const clientNameInp = document.getElementById('clientName');
-            const clientPhoneInp = document.getElementById('clientPhone');
-            const clientAddressInp = document.getElementById('clientAddress');
-            const modalTitle = document.getElementById('modalTitle');
-
-            const billItemsBody = document.getElementById('billItemsBody');
-            const addItemRowBtn = document.getElementById('addItemRow');
-            const paidAmountInp = document.getElementById('paidAmount');
-            const subtotalSpan = document.getElementById('subtotalView');
-            const remainingSpan = document.getElementById('remainingView');
-            const paidViewSpan = document.getElementById('paidView');
-            const billClientNameSpan = document.getElementById('billClientName');
-            const billClientPhoneSpan = document.getElementById('billClientPhone');
-            const billIdDisplay = document.getElementById('billIdDisplay');
-            const billDateDisplay = document.getElementById('billDateDisplay');
-
-            const downloadBillBtn = document.getElementById('downloadBillBtn');
-
-            // Backup / Restore elements
-            const downloadBackupBtn = document.getElementById('downloadBackupBtn');
-            const restoreBackupBtn = document.getElementById('restoreBackupBtn');
-            const restoreFileInput = document.getElementById('restoreFile');
-
-            let currentClientId = null;
-            let currentBillClientId = null;
-            let editingBillId = null;
-            let currentBillItems = [];
-
-            // --- DOWNLOAD BILL IMAGE ---
-            function downloadBillImage() {
-                const area = document.getElementById('billCaptureArea');
-                if (!area) return;
-                const clone = area.cloneNode(true);
-                const addBtnClone = clone.querySelector('#addItemRow');
-                if (addBtnClone) addBtnClone.style.display = 'none';
-                clone.querySelectorAll('.remove-row').forEach(btn => btn.style.display = 'none');
-                clone.querySelectorAll('input').forEach(inp => {
-                    inp.style.background = '#f0f4fc';
-                    inp.style.border = '1px solid #a0b8d0';
-                    inp.style.pointerEvents = 'none';
-                });
-                clone.style.transform = 'scale(1)';
-                clone.style.width = '800px';
-                clone.style.maxWidth = '100%';
-                document.body.appendChild(clone);
-
-                html2canvas(clone, { scale: 1.8, backgroundColor: '#ffffff', allowTaint: false, useCORS: true })
-                .then(canvas => {
-                    const link = document.createElement('a');
-                    link.download = `bill-${billIdDisplay.innerText}.png`;
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
-                    showToast('Bill image downloaded');
-                    document.body.removeChild(clone);
-                })
-                .catch(err => {
-                    showToast('Error capturing image');
-                    console.error(err);
-                    if (clone.parentNode) document.body.removeChild(clone);
-                });
-            }
-            downloadBillBtn.addEventListener('click', downloadBillImage);
-
-            // --- BACKUP: Download all data as ZIP (clients + bills) ---
-            function downloadBackup() {
-                const zip = new JSZip();
-                // Add data.json with all clients and bills
-                zip.file("data.json", JSON.stringify(data, null, 2));
-                // Also add a metadata file
-                zip.file("info.txt", `Choice Seven Star Khata & Bill Backup\nGenerated: ${new Date().toLocaleString()}\nTotal clients: ${data.clients.length}`);
-                
-                zip.generateAsync({ type: "blob" }).then(function(content) {
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(content);
-                    link.download = `ChoiceSevenStar_Backup_${new Date().toISOString().slice(0,10)}.zip`;
-                    link.click();
-                    showToast('Backup ZIP downloaded');
-                });
-            }
-            downloadBackupBtn.addEventListener('click', downloadBackup);
-
-            // --- RESTORE: Upload ZIP and replace data ---
-            restoreBackupBtn.addEventListener('click', () => {
-                restoreFileInput.click();
+        // ----- NAVIGATION -----
+        const navButtons = document.querySelectorAll('.nav-btn');
+        const pageElements = document.querySelectorAll('.page');
+        navButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const pageId = btn.dataset.page;
+                renderPage(pageId);
+                navButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
             });
+        });
 
-            restoreFileInput.addEventListener('change', (event) => {
-                const file = event.target.files[0];
-                if (!file) return;
-                
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    try {
-                        const zip = new JSZip();
-                        zip.loadAsync(e.target.result).then(async (zipContent) => {
-                            // Look for data.json
-                            const dataFile = zipContent.file("data.json");
-                            if (!dataFile) {
-                                showToast("Invalid backup: data.json not found");
-                                return;
-                            }
-                            const jsonStr = await dataFile.async("string");
-                            const restoredData = JSON.parse(jsonStr);
-                            // Validate structure
-                            if (!restoredData.clients || !Array.isArray(restoredData.clients)) {
-                                showToast("Invalid data format");
-                                return;
-                            }
-                            // Replace data & save
-                            data = restoredData;
-                            saveData();
-                            showToast("Data restored successfully!");
-                            // Refresh current page
-                            renderPage('dashboard');
-                        }).catch(err => {
-                            showToast("Corrupt ZIP file");
-                            console.error(err);
-                        });
-                    } catch (err) {
-                        showToast("Error reading file");
-                    }
-                };
-                reader.readAsArrayBuffer(file);
-                // Clear input so same file can be selected again
-                restoreFileInput.value = '';
-            });
-
-            // --- PAGE RENDERING ---
-            function renderPage(pageId) {
-                if (pageId === 'dashboard') pagesContainer.innerHTML = renderDashboard();
-                else if (pageId === 'clients') pagesContainer.innerHTML = renderClients();
-                else if (pageId === 'addClient') { openClientModalForAdd(); return; }
-                else if (pageId === 'clientProfile') return;
-
-                navItems.forEach(n => n.classList.remove('active'));
-                const activeItem = document.querySelector(`.nav-item[data-page="${pageId}"]`);
-                if (activeItem) activeItem.classList.add('active');
-                pageTitleEl.innerText = pageId === 'dashboard' ? 'Dashboard' : pageId === 'clients' ? 'Clients' : 'Profile';
+        function renderPage(pageId) {
+            pageElements.forEach(p => p.classList.remove('active-page'));
+            const targetPage = document.getElementById(`${pageId}-page`);
+            if (targetPage) {
+                if (pageId === 'dashboard') targetPage.innerHTML = renderDashboard();
+                else if (pageId === 'clients') targetPage.innerHTML = renderClients();
+                targetPage.classList.add('active-page');
             }
+            pageTitleEl.innerText = pageId.charAt(0).toUpperCase() + pageId.slice(1);
+        }
 
-            function renderDashboard() {
-                let totalReceivable = 0; let totalClients = data.clients.length;
-                data.clients.forEach(c => totalReceivable += c.totalPending || 0);
-                return `
-                    <div class="stat-grid">
-                        <div class="stat-card"><div class="stat-label">Total Receivable <span>💰</span></div><div class="stat-number">${formatPKR(totalReceivable)}</div></div>
-                        <div class="stat-card"><div class="stat-label">Total Clients <span>👥</span></div><div class="stat-number">${totalClients}</div></div>
+        // ----- PAGE CONTENT RENDERERS -----
+        function renderDashboard() {
+            let totalReceivable = data.clients.reduce((sum, c) => sum + (c.totalPending || 0), 0);
+            const recentClients = data.clients.slice(-3).reverse();
+            return `
+                <div class="stat-card">
+                    <div class="stat-label">Total Receivable</div>
+                    <div class="stat-number">${formatPKR(totalReceivable)}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Clients</div>
+                    <div class="stat-number">${data.clients.length}</div>
+                </div>
+
+                <div class="stat-card" style="margin-top: 32px;">
+                    <h2 class="section-title" style="margin-bottom:20px;">Data Management</h2>
+                    <div style="display:flex; gap: 12px; flex-direction: column;">
+                        <button class="btn btn-secondary btn-icon" id="backupBtn"><span>💾</span> Download Backup</button>
+                        <button class="btn btn-secondary btn-icon" onclick="document.getElementById('restoreInput').click();"><span>📤</span> Restore from Backup</button>
+                        <input type="file" id="restoreInput" accept=".zip" style="display:none;" onchange="handleRestore(event)">
                     </div>
-                    <h3 style="margin-bottom:20px; color:#0a1a3f;">Recent clients</h3>
-                    <div class="client-grid">
-                        ${data.clients.slice(0,5).map(c => `
-                            <div class="client-row">
-                                <div style="display:flex; gap:18px; flex-wrap:wrap;">
-                                    <span class="client-name">${c.name}</span>
-                                    <span class="client-phone">${c.phone}</span>
-                                    <span class="client-pending">${formatPKR(c.totalPending || 0)}</span>
-                                </div>
-                                <div><button class="icon-btn" data-view="${c.id}">👁️ View</button></div>
-                            </div>`).join('')}
-                    </div>
-                `;
-            }
+                </div>
 
-            function renderClients() {
-                return `
-                    <input class="search-bar" placeholder="Search clients..." id="clientSearch" onkeyup="window.searchClients()">
-                    <div class="client-grid" id="clientListContainer">
-                        ${data.clients.map(c => `
-                            <div class="client-row">
-                                <div style="display:flex; gap:18px; flex-wrap:wrap; align-items:center;">
-                                    <span class="client-name">${c.name}</span>
-                                    <span class="client-phone">${c.phone}</span>
-                                    <span class="client-pending">${formatPKR(c.totalPending || 0)}</span>
-                                </div>
-                                <div style="display:flex; gap:8px;">
-                                    <button class="icon-btn" data-view="${c.id}">👁️</button>
-                                    <button class="icon-btn" data-edit="${c.id}">✏️</button>
-                                    <button class="icon-btn" data-delete="${c.id}">🗑️</button>
-                                </div>
-                            </div>`).join('')}
-                    </div>
-                `;
-            }
-
-            function showClientProfile(clientId) {
-                const client = data.clients.find(c => c.id == clientId);
-                if (!client) return;
-                pageTitleEl.innerText = client.name;
-                navItems.forEach(n => n.classList.remove('active'));
-                const billsHtml = (client.bills || []).map(b => `
-                    <div class="client-row" style="margin-top:12px;">
-                        <div><b>${b.billId}</b> ${b.date}</div>
-                        <div>${formatPKR(b.totalAmount)} paid ${formatPKR(b.paidAmount)}</div>
-                        <div><button class="icon-btn" data-editbill="${b.billId}" data-client="${client.id}">✏️</button>
-                        <button class="icon-btn" data-delbill="${b.billId}" data-client="${client.id}">🗑️</button></div>
-                    </div>`).join('') || '<p style="padding:20px;">No bills</p>';
-
-                pagesContainer.innerHTML = `
-                    <div class="profile-card">
-                        <div><h2 style="color:#0a1a3f;">${client.name}</h2> <span>${client.phone}</span> <span>${client.address || ''}</span></div>
-                        <div style="margin-left:auto;"><span class="client-pending">Pending ${formatPKR(client.totalPending || 0)}</span></div>
-                        <div>
-                            <button class="icon-btn" data-edit="${client.id}">✏️ Edit</button>
-                            <button class="icon-btn" data-delete="${client.id}">🗑️ Delete</button>
-                            <button class="btn-primary" data-generatebill="${client.id}" style="padding:12px 28px;">Generate Bill</button>
-                        </div>
-                    </div>
-                    <h3 style="color:#0a1a3f; margin-bottom:20px;">Bill history</h3>
-                    <div id="billHistory">${billsHtml}</div>
-                `;
-            }
-
-            function openClientModalForAdd() {
-                currentClientId = null; modalTitle.innerText = 'Add Client';
-                clientNameInp.value = ''; clientPhoneInp.value = ''; clientAddressInp.value = '';
-                clientModal.style.display = 'flex';
-            }
-            function openClientModalForEdit(id) {
-                const c = data.clients.find(c => c.id == id); if (!c) return;
-                currentClientId = c.id; modalTitle.innerText = 'Edit Client';
-                clientNameInp.value = c.name; clientPhoneInp.value = c.phone; clientAddressInp.value = c.address || '';
-                clientModal.style.display = 'flex';
-            }
-
-            function openBillModal(clientId, bill=null) {
-                currentBillClientId = clientId;
-                const client = data.clients.find(c => c.id == clientId);
-                if (!client) return;
-                billClientNameSpan.innerText = client.name; 
-                billClientPhoneSpan.innerText = client.phone;
-                if (bill) {
-                    editingBillId = bill.billId;
-                    currentBillItems = bill.items.map(i => ({ name: i.name || '', price: i.price || 0, qty: i.qty || 1 }));
-                    paidAmountInp.value = bill.paidAmount;
-                    billIdDisplay.innerText = bill.billId;
-                    billDateDisplay.innerText = bill.date || new Date().toISOString().slice(0,10);
-                } else {
-                    editingBillId = null;
-                    currentBillItems = [{ name: '', price: 0, qty: 1 }];
-                    paidAmountInp.value = 0;
-                    billIdDisplay.innerText = generateBillId();
-                    billDateDisplay.innerText = new Date().toISOString().slice(0,10);
-                }
-                renderBillItems(); 
-                billModal.style.display = 'flex';
-            }
-
-            function renderBillItems() {
-                let html = '';
-                currentBillItems.forEach((item, idx) => {
-                    const total = (item.price || 0) * (item.qty || 1);
-                    html += `<tr>
-                        <td><input class="item-name-input" value="${(item.name || '').replace(/"/g, '&quot;')}" placeholder="item" data-index="${idx}" style="width:140px;"></td>
-                        <td><input type="number" value="${item.price || 0}" data-index="${idx}" class="item-price" min="0" style="width:100px;"></td>
-                        <td><input type="number" value="${item.qty || 1}" data-index="${idx}" class="item-qty" min="1" style="width:90px;"></td>
-                        <td>${formatPKR(total)}</td>
-                        <td><button class="remove-row" data-index="${idx}">✖</button></td>
-                    </tr>`;
-                });
-                billItemsBody.innerHTML = html;
-                calculateBillTotals();
-            }
-
-            function calculateBillTotals() {
-                let subtotal = 0;
-                const rows = document.querySelectorAll('#itemsTable tbody tr');
-                rows.forEach((row, idx) => {
-                    const nameInput = row.querySelector('.item-name-input');
-                    const priceInput = row.querySelector('.item-price');
-                    const qtyInput = row.querySelector('.item-qty');
-                    
-                    const name = nameInput ? nameInput.value : '';
-                    const price = parseFloat(priceInput?.value) || 0;
-                    const qty = parseFloat(qtyInput?.value) || 1;
-                    
-                    subtotal += price * qty;
-                    
-                    if (currentBillItems[idx]) {
-                        currentBillItems[idx].name = name;
-                        currentBillItems[idx].price = price;
-                        currentBillItems[idx].qty = qty;
-                    }
-                });
-                subtotalSpan.innerText = formatPKR(subtotal);
-                const paid = parseFloat(paidAmountInp.value) || 0;
-                paidViewSpan.innerText = formatPKR(paid);
-                remainingSpan.innerText = formatPKR(Math.max(0, subtotal - paid));
-                return subtotal;
-            }
-
-            function attachGlobalEvents() {
-                document.addEventListener('click', (e) => {
-                    if (e.target.closest('[data-view]')) { const id = e.target.closest('[data-view]').getAttribute('data-view'); showClientProfile(id); }
-                    if (e.target.closest('[data-edit]')) { const id = e.target.closest('[data-edit]').getAttribute('data-edit'); openClientModalForEdit(id); }
-                    if (e.target.closest('[data-delete]')) {
-                        const id = e.target.closest('[data-delete]').getAttribute('data-delete');
-                        if (confirm('Delete client?')) { data.clients = data.clients.filter(c => c.id != id); saveData(); showToast('Deleted'); renderPage('clients'); }
-                    }
-                    if (e.target.closest('[data-generatebill]')) { const id = e.target.closest('[data-generatebill]').getAttribute('data-generatebill'); openBillModal(id); }
-                    if (e.target.closest('[data-delbill]')) {
-                        const billId = e.target.closest('[data-delbill]').getAttribute('data-delbill');
-                        const clientId = e.target.closest('[data-delbill]').getAttribute('data-client');
-                        const client = data.clients.find(c => c.id == clientId);
-                        if (client && confirm('Remove bill?')) {
-                            client.bills = (client.bills || []).filter(b => b.billId != billId);
-                            client.totalPending = (client.bills || []).reduce((acc, b) => acc + (b.totalAmount - b.paidAmount),0);
-                            saveData(); showToast('Bill deleted'); showClientProfile(clientId);
-                        }
-                    }
-                    if (e.target.closest('[data-editbill]')) {
-                        const billId = e.target.closest('[data-editbill]').getAttribute('data-editbill');
-                        const clientId = e.target.closest('[data-editbill]').getAttribute('data-client');
-                        const client = data.clients.find(c => c.id == clientId);
-                        const bill = client?.bills?.find(b => b.billId == billId);
-                        if (bill) openBillModal(clientId, bill);
-                    }
-                });
-
-                navItems.forEach(item => { item.addEventListener('click', (e) => { renderPage(item.dataset.page); if (window.innerWidth <= 700) sidebar.classList.remove('show'); }); });
-
-                cancelClient.onclick = () => clientModal.style.display = 'none';
-                cancelBill.onclick = () => billModal.style.display = 'none';
-
-                saveClientBtn.onclick = () => {
-                    const name = clientNameInp.value.trim(); const phone = clientPhoneInp.value.trim();
-                    if (!name) { alert('name required'); return; }
-                    if (currentClientId) {
-                        const client = data.clients.find(c => c.id == currentClientId);
-                        if (client) { client.name = name; client.phone = phone; client.address = clientAddressInp.value; }
-                    } else {
-                        const newClient = { id: 'c' + Date.now() + Math.random().toString(36).slice(2), name, phone, address: clientAddressInp.value, totalPending:0, bills:[] };
-                        data.clients.push(newClient);
-                    }
-                    saveData(); showToast('Client saved'); clientModal.style.display = 'none'; renderPage('clients');
-                };
-
-                addItemRowBtn.onclick = () => { currentBillItems.push({ name: '', price: 0, qty: 1 }); renderBillItems(); };
-                
-                billItemsBody.addEventListener('click', (e) => { 
-                    if (e.target.classList.contains('remove-row')) { 
-                        const idx = e.target.dataset.index; 
-                        currentBillItems.splice(idx, 1); 
-                        renderBillItems(); 
-                    } 
-                });
-                
-                billItemsBody.addEventListener('input', calculateBillTotals);
-                paidAmountInp.addEventListener('input', calculateBillTotals);
-
-                saveBillBtn.onclick = () => {
-                    calculateBillTotals(); 
-                    const subtotal = parseFloat(subtotalSpan.innerText.replace(/[₨,]/g,'')) || 0;
-                    const paid = parseFloat(paidAmountInp.value) || 0; 
-                    const remaining = Math.max(0, subtotal - paid);
-                    
-                    const items = currentBillItems.map(i => ({ name: i.name || '', price: i.price || 0, qty: i.qty || 1 }));
-                    
-                    const client = data.clients.find(c => c.id == currentBillClientId); 
-                    if (!client) return;
-                    
-                    if (editingBillId) {
-                        const idx = (client.bills || []).findIndex(b => b.billId == editingBillId);
-                        if (idx>-1) { 
-                            client.bills[idx] = { 
-                                ...client.bills[idx], 
-                                items: items, 
-                                totalAmount: subtotal, 
-                                paidAmount: paid, 
-                                remainingAmount: remaining, 
-                                date: billDateDisplay.innerText 
-                            }; 
-                        }
-                    } else {
-                        if (!client.bills) client.bills = [];
-                        client.bills.push({ 
-                            billId: billIdDisplay.innerText, 
-                            date: billDateDisplay.innerText, 
-                            items: items, 
-                            totalAmount: subtotal, 
-                            paidAmount: paid, 
-                            remainingAmount: remaining 
-                        });
-                    }
-                    client.totalPending = (client.bills || []).reduce((acc, b) => acc + (b.totalAmount - b.paidAmount), 0);
-                    saveData(); showToast('Bill saved'); billModal.style.display = 'none'; showClientProfile(client.id);
-                };
-            }
-
-            window.searchClients = function() {
-                const term = document.getElementById('clientSearch')?.value.toLowerCase() || '';
-                const filtered = data.clients.filter(c => c.name.toLowerCase().includes(term) || c.phone.includes(term));
-                const container = document.getElementById('clientListContainer');
-                if (container) {
-                    container.innerHTML = filtered.map(c => `
-                        <div class="client-row">
-                            <div style="display:flex; gap:18px; flex-wrap:wrap;">
-                                <span class="client-name">${c.name}</span><span class="client-phone">${c.phone}</span><span class="client-pending">${formatPKR(c.totalPending || 0)}</span>
+                <h2 class="section-title" style="margin-top: 32px;">Recent Clients</h2>
+                <div id="recentClientsList">
+                    ${recentClients.length > 0 ? recentClients.map(c => `
+                        <div class="client-card" data-view-profile="${c.id}">
+                            <div class="client-info">
+                                <div class="name">${c.name}</div>
+                                <div class="phone">${c.phone}</div>
                             </div>
-                            <div><button class="icon-btn" data-view="${c.id}">👁️</button>
-                            <button class="icon-btn" data-edit="${c.id}">✏️</button>
-                            <button class="icon-btn" data-delete="${c.id}">🗑️</button></div>
-                        </div>`).join('');
-                }
-            };
+                            <div class="client-pending">${formatPKR(c.totalPending || 0)}</div>
+                        </div>
+                    `).join('') : '<p style="color: var(--text-light); text-align:center;">No clients yet. Add one!</p>'}
+                </div>
+            `;
+        }
 
-            // start after splash
-            setTimeout(() => {
-                if (appContainer.style.display === 'flex') {
-                    renderPage('dashboard');
-                    attachGlobalEvents();
-                } else {
-                    setTimeout(() => { renderPage('dashboard'); attachGlobalEvents(); }, 600);
+        // FIXED FUNCTION
+        function renderClients() {
+            let clientListHtml = data.clients.slice().reverse().map(c => `
+                <div class="client-card" data-view-profile="${c.id}">
+                    <div class="client-info">
+                        <div class="name">${c.name}</div>
+                        <div class="phone">${c.phone}</div>
+                    </div>
+                    <div class="client-pending">${formatPKR(c.totalPending || 0)}</div>
+                </div>
+            `).join('');
+
+            if (data.clients.length === 0) {
+                clientListHtml = '<p style="text-align:center; color: var(--text-light); padding: 20px;">No clients yet. Use the \'+\' button to add your first client!</p>';
+            }
+
+            return `
+                <input class="search-bar" placeholder="Search by name or phone..." id="clientSearch" onkeyup="window.searchClients()">
+                <div id="clientListContainer">
+                    ${clientListHtml}
+                </div>
+            `;
+        }
+        
+        window.searchClients = function() {
+            const term = document.getElementById('clientSearch')?.value.toLowerCase() || '';
+            const filtered = data.clients.filter(c => c.name.toLowerCase().includes(term) || c.phone.includes(term));
+            const container = document.getElementById('clientListContainer');
+            if(container) {
+                let filteredHtml = filtered.slice().reverse().map(c => `<div class="client-card" data-view-profile="${c.id}"><div class="client-info"><div class="name">${c.name}</div><div class="phone">${c.phone}</div></div><div class="client-pending">${formatPKR(c.totalPending || 0)}</div></div>`).join('');
+                if(filtered.length === 0) {
+                    filteredHtml = '<p style="text-align:center; color: var(--text-light); padding: 20px;">No clients match your search.</p>';
                 }
-            }, 3500);
-        })();
+                container.innerHTML = filteredHtml;
+            }
+        };
+        
+        function showClientProfile(clientId) {
+            const client = data.clients.find(c => c.id == clientId);
+            if (!client) return;
+            currentClientId = clientId;
+            document.getElementById('profileName').innerText = client.name;
+            const profileContent = document.getElementById('profileContent');
+            const billsHtml = (client.bills || []).slice().reverse().map(b => `<div class="client-card" data-editbill='${JSON.stringify({billId: b.billId, clientId: client.id})}'>
+                    <div class="client-info">
+                        <div class="name">${b.billId} <span style="font-weight:400; font-size:0.8em; color: var(--text-light)">(${b.date})</span></div>
+                        <div>Total: ${formatPKR(b.totalAmount)} | Paid: ${formatPKR(b.paidAmount)}</div>
+                    </div><span style="font-size: 1.5rem;">›</span></div>`).join('') || '<p style="text-align:center; color: var(--text-light); padding: 20px;">No bills recorded.</p>';
+            profileContent.innerHTML = `<div style="background: var(--secondary-bg); padding: 20px; border-radius: 16px; margin-bottom: 24px;"><p><strong>Phone:</strong> ${client.phone}</p><p><strong>Address:</strong> ${client.address || 'N/A'}</p><hr style="border:none; border-top:1px solid var(--border-color); margin: 16px 0;"><div style="display:flex; justify-content:space-between; align-items:center;"><span style="font-weight:600;">Total Pending:</span><span class="client-pending" style="font-size:1rem;">${formatPKR(client.totalPending || 0)}</span></div></div><div style="display:flex; gap:12px; margin-bottom: 24px;"><button class="btn btn-secondary" data-edit-client="${client.id}">Edit Client</button><button class="btn btn-danger" data-delete-client="${client.id}">Delete Client</button></div><h2 class="section-title">Bill History</h2><div id="billHistory">${billsHtml}</div>`;
+            openPage('clientProfilePage');
+        }
+
+        const addClientBtn = document.getElementById('addClientBtn');
+        const clientFormTitle = document.getElementById('clientFormTitle');
+        const clientNameInp = document.getElementById('clientName');
+        const clientPhoneInp = document.getElementById('clientPhone');
+        const clientAddressInp = document.getElementById('clientAddress');
+        const saveClientBtn = document.getElementById('saveClientBtn');
+
+        function openClientFormForAdd() {
+            currentClientId = null;
+            clientFormTitle.innerText = 'Add New Client';
+            clientNameInp.value = ''; clientPhoneInp.value = ''; clientAddressInp.value = '';
+            openPage('clientFormPage');
+        }
+        function openClientFormForEdit(clientId) {
+            const client = data.clients.find(c => c.id == clientId);
+            if (!client) return;
+            currentClientId = clientId;
+            clientFormTitle.innerText = 'Edit Client';
+            clientNameInp.value = client.name; clientPhoneInp.value = client.phone; clientAddressInp.value = client.address || '';
+            openPage('clientFormPage');
+        }
+        addClientBtn.addEventListener('click', openClientFormForAdd);
+        saveClientBtn.addEventListener('click', () => {
+            const name = clientNameInp.value.trim(); const phone = clientPhoneInp.value.trim();
+            if (!name) { alert('Client name is required.'); return; }
+            if (currentClientId) {
+                const client = data.clients.find(c => c.id == currentClientId);
+                if (client) { client.name = name; client.phone = phone; client.address = clientAddressInp.value; }
+            } else {
+                data.clients.push({ id: 'c' + Date.now(), name, phone, address: clientAddressInp.value, totalPending: 0, bills: [] });
+            }
+            saveData(); showToast('Client saved!'); closePage('clientFormPage');
+            renderPage('clients');
+            if (currentClientId) showClientProfile(currentClientId);
+        });
+        
+        const billItemsBody = document.getElementById('billItemsBody');
+        const addItemRowBtn = document.getElementById('addItemRowBtn');
+        const paidAmountInp = document.getElementById('paidAmount');
+        const subtotalSpan = document.getElementById('subtotalView');
+        const remainingSpan = document.getElementById('remainingView');
+        const paidViewSpan = document.getElementById('paidView');
+        const billClientNameSpan = document.getElementById('billClientName');
+        const billIdDisplay = document.getElementById('billIdDisplay');
+        const billDateDisplay = document.getElementById('billDateDisplay');
+        const downloadBillBtn = document.getElementById('downloadBillBtn');
+        const saveBillBtn = document.getElementById('saveBillBtn');
+        
+        function openBillForm(clientId, bill = null) {
+            currentBillClientId = clientId;
+            const client = data.clients.find(c => c.id == clientId);
+            if (!client) return;
+            billClientNameSpan.innerText = client.name;
+            if (bill) {
+                editingBillId = bill.billId; currentBillItems = bill.items.map(i => ({...i})); paidAmountInp.value = bill.paidAmount; billIdDisplay.innerText = bill.billId; billDateDisplay.innerText = bill.date || new Date().toISOString().slice(0, 10);
+            } else {
+                editingBillId = null; currentBillItems = [{ name: '', price: 0, qty: 1 }]; paidAmountInp.value = 0; billIdDisplay.innerText = generateBillId(); billDateDisplay.innerText = new Date().toISOString().slice(0, 10);
+            }
+            renderBillItems(); openPage('billPage');
+        }
+        function renderBillItems() {
+            billItemsBody.innerHTML = currentBillItems.map((item, idx) => `
+                <tr class="bill-item-row">
+                    <td><input value="${(item.name || '').replace(/"/g, '&quot;')}" placeholder="Item" data-index="${idx}" data-field="name"></td>
+                    <td><input type="number" value="${item.price || 0}" data-index="${idx}" data-field="price" style="width: 80px;"></td>
+                    <td><input type="number" value="${item.qty || 1}" data-index="${idx}" data-field="qty" style="width: 60px;"></td>
+                    <td><button class="remove-row-btn" data-index="${idx}">×</button></td>
+                </tr>`).join('');
+            calculateBillTotals();
+        }
+        function calculateBillTotals() {
+            let subtotal = currentBillItems.reduce((sum, item) => sum + (item.price || 0) * (item.qty || 1), 0);
+            subtotalSpan.innerText = formatPKR(subtotal);
+            const paid = parseFloat(paidAmountInp.value) || 0;
+            paidViewSpan.innerText = formatPKR(paid);
+            remainingSpan.innerText = formatPKR(Math.max(0, subtotal - paid));
+        }
+        addItemRowBtn.addEventListener('click', () => { currentBillItems.push({ name: '', price: 0, qty: 1 }); renderBillItems(); });
+        billItemsBody.addEventListener('input', e => { if (e.target.dataset.index) { const { index, field } = e.target.dataset; currentBillItems[index][field] = e.target.type === 'number' ? parseFloat(e.target.value) || 0 : e.target.value; calculateBillTotals(); } });
+        billItemsBody.addEventListener('click', e => { if (e.target.classList.contains('remove-row-btn')) { currentBillItems.splice(e.target.dataset.index, 1); renderBillItems(); } });
+        paidAmountInp.addEventListener('input', calculateBillTotals);
+        saveBillBtn.addEventListener('click', () => {
+            const client = data.clients.find(c => c.id == currentBillClientId); if (!client) return;
+            const totalAmount = currentBillItems.reduce((sum, i) => sum + (i.price || 0) * (i.qty || 1), 0);
+            const paidAmount = parseFloat(paidAmountInp.value) || 0;
+            const newBill = { billId: billIdDisplay.innerText, date: billDateDisplay.innerText, items: currentBillItems.filter(i => i.name && i.name.trim()), totalAmount, paidAmount, remainingAmount: totalAmount - paidAmount };
+            if (editingBillId) { const billIndex = (client.bills || []).findIndex(b => b.billId == editingBillId); if (billIndex > -1) client.bills[billIndex] = newBill; } 
+            else { if (!client.bills) client.bills = []; client.bills.push(newBill); }
+            client.totalPending = (client.bills || []).reduce((sum, b) => sum + (b.totalAmount - b.paidAmount), 0);
+            saveData(); showToast('Bill saved!'); closePage('billPage'); showClientProfile(client.id);
+        });
+        downloadBillBtn.addEventListener('click', () => {
+            const area = document.getElementById('billCaptureArea'); const btn = document.getElementById('downloadBillBtn'); const originalText = btn.innerHTML;
+            btn.innerHTML = '<span>⏳</span> Processing...'; btn.disabled = true;
+            const clone = area.cloneNode(true); clone.querySelector('#addItemRowBtn').style.display = 'none'; clone.querySelectorAll('.remove-row-btn').forEach(b => b.style.display = 'none');
+            clone.style.width = '400px'; document.body.appendChild(clone);
+            html2canvas(clone, { scale: 2, backgroundColor: '#ffffff', useCORS: true })
+            .then(canvas => { const link = document.createElement('a'); link.download = `bill-${billIdDisplay.innerText}.png`; link.href = canvas.toDataURL('image/png'); link.click(); showToast('Bill image downloaded!'); })
+            .catch(err => { showToast('Error capturing image.'); console.error(err); })
+            .finally(() => { document.body.removeChild(clone); btn.innerHTML = originalText; btn.disabled = false; });
+        });
+        
+        // --- BACKUP & RESTORE FUNCTIONS ---
+        function handleBackup() {
+            showToast("Generating backup...");
+            const dataString = localStorage.getItem('cssKhataApp');
+            if (!dataString || JSON.parse(dataString).clients.length === 0) {
+                showToast("No data to back up.");
+                return;
+            }
+            const zip = new JSZip();
+            zip.file("backup.json", dataString);
+            const readmeContent = `Choice Seven Star Khata App Backup\nDate: ${new Date().toLocaleString()}\n\nDO NOT EDIT THE backup.json FILE MANUALLY.`;
+            zip.file("readme.txt", readmeContent);
+            zip.generateAsync({ type: "blob" })
+                .then(function(content) {
+                    const link = document.createElement('a');
+                    const date = new Date().toISOString().slice(0,10);
+                    link.download = `css-khata-backup-${date}.zip`;
+                    link.href = URL.createObjectURL(content);
+                    link.click();
+                    URL.revokeObjectURL(link.href);
+                    showToast("Backup downloaded!");
+                })
+                .catch(err => { showToast("Error creating backup."); console.error("Backup error:", err); });
+        }
+        window.handleRestore = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            if (!file.name.endsWith('.zip')) {
+                showToast("Invalid file type. Please select a .zip backup file.");
+                event.target.value = ''; return;
+            }
+            if (!confirm("Are you sure you want to restore? This will ERASE all current data and replace it with the backup data.")) {
+                event.target.value = ''; return;
+            }
+            showToast("Restoring data...");
+            const zip = new JSZip();
+            zip.loadAsync(file)
+                .then(zipContent => {
+                    const backupFile = zipContent.file("backup.json");
+                    if (!backupFile) throw new Error("Invalid backup file: backup.json not found.");
+                    return backupFile.async("string");
+                })
+                .then(jsonString => {
+                    try {
+                        JSON.parse(jsonString); 
+                        localStorage.setItem('cssKhataApp', jsonString);
+                        showToast("Restore successful! App will now reload.");
+                        setTimeout(() => location.reload(), 1500);
+                    } catch (e) {
+                        throw new Error("Backup file is corrupted or not valid JSON.");
+                    }
+                })
+                .catch(err => { showToast(`Restore failed: ${err.message}`); console.error("Restore error:", err); })
+                .finally(() => { event.target.value = ''; });
+        }
+        
+        // GLOBAL EVENT LISTENER
+        document.addEventListener('click', (e) => {
+            const viewProfileTarget = e.target.closest('[data-view-profile]');
+            if (viewProfileTarget) { showClientProfile(viewProfileTarget.dataset.viewProfile); return; }
+            const editClientTarget = e.target.closest('[data-edit-client]');
+            if (editClientTarget) { openClientFormForEdit(editClientTarget.dataset.editClient); return; }
+            const deleteClientTarget = e.target.closest('[data-delete-client]');
+            if (deleteClientTarget) { const clientId = deleteClientTarget.dataset.deleteClient; if (confirm('Are you sure you want to delete this client and all their bills? This action cannot be undone.')) { data.clients = data.clients.filter(c => c.id !== clientId); saveData(); showToast('Client deleted'); closePage('clientProfilePage'); renderPage('clients'); } return; }
+            const editBillTarget = e.target.closest('[data-editbill]');
+            if (editBillTarget) { const { billId, clientId } = JSON.parse(editBillTarget.dataset.editbill); const client = data.clients.find(c => c.id == clientId); const bill = client?.bills?.find(b => b.billId == billId); if (bill) openBillForm(clientId, bill); return; }
+            const generateBillTarget = document.getElementById('generateBillBtn');
+            if (e.target === generateBillTarget) { openBillForm(currentClientId); }
+            const backupBtn = e.target.closest('#backupBtn');
+            if(backupBtn) { handleBackup(); }
+        });
+    })();
     </script>
 </body>
 </html>
