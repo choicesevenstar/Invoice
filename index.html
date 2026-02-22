@@ -3,12 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CSS Khata/Bill</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&display=swap" rel="stylesheet" />
+  <title>CSS Khata/Bill</title> 
   <style>
     :root{--navy:#102a4a;--navy2:#1a3f6f;--black:#0f1318;--white:#fff;--muted:#5a6778;--line:#d7e0ee;--bg:#f2f6fc;--ok:#1d8f57;--danger:#be3434;--r:14px;--sh:0 10px 26px rgba(16,42,74,.12)}
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:Segoe UI,Tahoma,sans-serif;background:radial-gradient(circle at 20% 0,#eaf1fc,transparent 35%),var(--bg);color:var(--black)}
     body.modal-open{overflow:hidden}
+    body.intro-active{overflow:hidden}
+    .intro{
+      position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;
+      background:
+        radial-gradient(circle at 20% 18%, rgba(255,255,255,.12), transparent 34%),
+        radial-gradient(circle at 82% 82%, rgba(255,255,255,.1), transparent 36%),
+        linear-gradient(145deg,var(--navy),var(--navy2));
+      transition:opacity .55s ease,visibility .55s ease;
+    }
+    .intro.done{opacity:0;visibility:hidden;pointer-events:none}
+    .intro-box{
+      border:1px solid rgba(255,255,255,.28);border-radius:16px;padding:26px 34px;background:rgba(255,255,255,.08);
+      box-shadow:0 18px 38px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.24);
+      animation:intro-pop .9s ease both;
+    }
+    .intro-title{
+      color:var(--white);font-size:clamp(1.9rem,6vw,3.1rem);font-weight:900;letter-spacing:.5px;line-height:1;
+      text-shadow:0 6px 16px rgba(0,0,0,.35);
+      animation:intro-glow 1.6s ease-in-out infinite alternate;
+    }
+    @keyframes intro-pop{from{opacity:0;transform:translateY(14px) scale(.92)}to{opacity:1;transform:none}}
+    @keyframes intro-glow{from{filter:brightness(1)}to{filter:brightness(1.18)}}
     .app{min-height:100vh;display:flex;flex-direction:column}
     .top{position:sticky;top:0;z-index:100;background:var(--navy);color:var(--white);box-shadow:0 8px 22px rgba(0,0,0,.28)}
     .top-in{max-width:1200px;margin:auto;padding:12px 14px;display:grid;grid-template-columns:auto auto 1fr auto;gap:10px;align-items:center;position:relative}
@@ -76,6 +101,27 @@
     .toast{background:#11243f;color:#fff;border-radius:10px;padding:9px 11px;font-size:.84rem;box-shadow:0 10px 16px rgba(0,0,0,.25);opacity:0;transform:translateY(10px);transition:.25s}
     .toast.show{opacity:1;transform:none}.toast.ok{background:var(--ok)}.toast.err{background:var(--danger)}
     .ripple{position:absolute;border-radius:50%;transform:scale(0);animation:rip .6s linear;background:rgba(255,255,255,.5);pointer-events:none}
+    .watermark{
+      position:fixed;left:50%;bottom:8px;transform:translateX(-50%);
+      font-family:"UnifrakturCook","Old English Text MT",serif;
+      font-size:.82rem;color:#07090d;opacity:.72;letter-spacing:.35px;
+      pointer-events:none;user-select:none;z-index:120;
+      white-space:nowrap;
+      display:flex;align-items:center;gap:4px;
+    }
+    .watermark span{
+      opacity:.14;
+      animation:wm-word 4.4s ease-in-out infinite;
+    }
+    .watermark span:nth-child(1){animation-delay:0s}
+    .watermark span:nth-child(2){animation-delay:1.1s}
+    .watermark span:nth-child(3){animation-delay:2.2s}
+    .watermark span:nth-child(4){animation-delay:3.3s}
+    @keyframes wm-word{
+      0%,18%{opacity:.14;transform:translateY(0)}
+      24%,42%{opacity:1;transform:translateY(-1px)}
+      48%,100%{opacity:.14;transform:translateY(0)}
+    }
     @keyframes rip{to{transform:scale(4);opacity:0}}
     @media (max-width:860px){.top-in{grid-template-columns:auto auto auto}.menu{display:inline-flex;align-items:center;justify-content:center}.nav{position:absolute;top:100%;left:0;right:0;background:var(--navy);border-top:1px solid rgba(255,255,255,.2);padding:10px 14px;display:grid;gap:8px;transform:scaleY(0);transform-origin:top;opacity:0;pointer-events:none}.nav.open{transform:scaleY(1);opacity:1;pointer-events:auto}.nav-btn{text-align:left;width:100%}.grid2,.billgrid,.sum{grid-template-columns:1fr}.toolbar-right{width:100%}}
     @media (max-width:720px){.main{padding:12px 8px 20px}.panel,.card{padding:11px}.form2{grid-template-columns:1fr}.item{grid-template-columns:1fr 1fr}.item .iname{grid-column:1/-1}.item .itotal{grid-column:1/2}.item .irem{grid-column:2/3}th,td{font-size:.78rem;padding:6px}}
@@ -83,10 +129,23 @@
   </style>
 </head>
 <body>
+  <div id="intro" class="intro" aria-hidden="true">
+    <div class="intro-box">
+      <p class="intro-title">Choice Seven Star Invoice</p>
+    </div>
+  </div>
+
+  <p class="watermark" aria-label="Developed by: Rabi Bhatti">
+    <span>Developed</span>
+    <span>by:</span>
+    <span>Rabi</span>
+    <span>Bhatti</span>
+  </p>
+
   <div class="app">
     <header class="top">
       <div class="top-in">
-        <div class="brand"><h1>CSS Khata/Bill</h1><p>Client & Billing Management</p></div>
+        <div class="brand"><h1>Choice Seven Star Invoice</h1><p>Clients & Billing Management</p></div>
         <button id="menu" class="menu" aria-label="Toggle menu">Menu</button>
         <nav id="nav" class="nav">
           <button class="nav-btn active" data-page="dashboard">Dashboard</button>
@@ -233,6 +292,7 @@
       const KEY = 'css_khata_bill_data';
       const S = { clients: [], selectedClient: null, page: 'dashboard', invoiceBill: null };
       const R = {
+        intro: document.getElementById('intro'),
         menu: document.getElementById('menu'), nav: document.getElementById('nav'), navBtns: [...document.querySelectorAll('.nav-btn')],
         dashboard: document.getElementById('dashboard'), clientsPage: document.getElementById('clients'), profile: document.getElementById('profile'),
         cardPending: document.getElementById('cardPending'), cardClients: document.getElementById('cardClients'),
@@ -587,7 +647,15 @@
       }
 
       function init(){load();bind();renderAll();}
+      function runIntro(){
+        document.body.classList.add('intro-active');
+        setTimeout(()=>{
+          if(R.intro) R.intro.classList.add('done');
+          document.body.classList.remove('intro-active');
+        },3000);
+      }
       init();
+      runIntro();
     })();
   </script>
 </body>
