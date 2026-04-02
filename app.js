@@ -251,6 +251,7 @@ async function loadClients(query = '') {
                 </div>
                 <div style="display: flex; gap: 10px; margin-top: 20px;">
                     <button class="btn" onclick="editClient('${client.id}')" style="padding: 8px; width: auto; background: #f0f4f8;"><i data-lucide="edit" style="width: 16px;"></i></button>
+                    <button class="btn" onclick="deleteClientPrompt('${client.id}')" style="padding: 8px; width: auto; background: #fff1f0; color: var(--danger-red);"><i data-lucide="trash-2" style="width: 16px;"></i></button>
                     <button class="btn" onclick="createInvoiceForClient('${client.id}')" style="padding: 8px; font-size: 12px; border: 1px solid var(--primary-navy);">New Invoice</button>
                     <button class="btn" onclick="showClientProfile('${client.id}')" style="padding: 8px; font-size: 12px; background: var(--primary-navy); color: white;">View Profile</button>
                 </div>
@@ -274,6 +275,7 @@ async function showClientProfile(id) {
     // Setup profile buttons
     document.getElementById('prof-edit-btn').onclick = () => editClient(id);
     document.getElementById('prof-new-inv-btn').onclick = () => createInvoiceForClient(id);
+    document.getElementById('prof-delete-btn').onclick = () => deleteClientPrompt(id);
 
     try {
         const invoices = await getInvoicesByClient(id);
@@ -303,6 +305,7 @@ async function showClientProfile(id) {
         
         document.querySelectorAll('.view-section').forEach(v => v.style.display = 'none');
         document.getElementById('client-profile-view').style.display = 'block';
+        currentView = 'client-profile';
         lucide.createIcons();
     } catch (err) {
         showToast('Error loading profile data', 'error');
@@ -327,7 +330,11 @@ async function deleteClientPrompt(id) {
         try {
             await deleteClient(id);
             showToast('Client deleted');
-            loadClients();
+            if (currentView === 'client-profile') {
+                showView('clients');
+            } else {
+                loadClients();
+            }
         } catch (err) {
             showToast('Error deleting client', 'error');
         }
