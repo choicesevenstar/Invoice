@@ -1,674 +1,491 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="google-site-verification" content="rhDfdpFJT9-Q-TyIRyknMvyksd7fRGH91NtY4bhjYy8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&display=swap" rel="stylesheet" />
-  <title>Choice Seven Star Invoice Management System | Free Online Billing Software</title>
-  <meta name="description" content="Choice Seven Star Invoice Management System is a smart and simple online billing and invoice generator tool. Create, manage and download invoices easily." />
-  <meta name="keywords" content="Choice Seven Star Invoice, invoice management system, online billing software, free invoice generator, Pakistan billing system" />
-  <meta name="author" content="Choice Seven Star" />
-  <meta name="robots" content="index, follow" />
-  <meta property="og:title" content="Choice Seven Star Invoice Management System" />
-  <meta property="og:description" content="Smart and professional invoice generator and billing management system." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://choicesevenstar.github.io/Invoice/" />
-  <link rel="icon" type="image/png" sizes="32x32" href="logo.png" />
-  <style>
-    :root{--navy:#102a4a;--navy2:#1a3f6f;--black:#0f1318;--white:#fff;--muted:#5a6778;--line:#d7e0ee;--bg:#f2f6fc;--ok:#1d8f57;--danger:#be3434;--r:14px;--sh:0 10px 26px rgba(16,42,74,.12)}
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:Segoe UI,Tahoma,sans-serif;background:radial-gradient(circle at 20% 0,#eaf1fc,transparent 35%),var(--bg);color:var(--black)}
-    body.modal-open{overflow:hidden}
-    body.intro-active{overflow:hidden}
-    .intro{
-      position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;
-      background:
-        radial-gradient(circle at 20% 18%, rgba(255,255,255,.12), transparent 34%),
-        radial-gradient(circle at 82% 82%, rgba(255,255,255,.1), transparent 36%),
-        linear-gradient(145deg,var(--navy),var(--navy2));
-      transition:opacity .55s ease,visibility .55s ease;
-    }
-    .intro.done{opacity:0;visibility:hidden;pointer-events:none}
-    .intro-box{
-      border:1px solid rgba(255,255,255,.28);border-radius:16px;padding:26px 34px;background:rgba(255,255,255,.08);
-      box-shadow:0 18px 38px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.24);
-      animation:intro-pop .9s ease both;
-    }
-    .intro-title{
-      color:var(--white);font-size:clamp(1.9rem,6vw,3.1rem);font-weight:900;letter-spacing:.5px;line-height:1;
-      text-shadow:0 6px 16px rgba(0,0,0,.35);
-      animation:intro-glow 1.6s ease-in-out infinite alternate;
-    }
-    @keyframes intro-pop{from{opacity:0;transform:translateY(14px) scale(.92)}to{opacity:1;transform:none}}
-    @keyframes intro-glow{from{filter:brightness(1)}to{filter:brightness(1.18)}}
-    .app{min-height:100vh;display:flex;flex-direction:column}
-    .top{position:sticky;top:0;z-index:100;background:var(--navy);color:var(--white);box-shadow:0 8px 22px rgba(0,0,0,.28)}
-    .top-in{max-width:1200px;margin:auto;padding:12px 14px;display:grid;grid-template-columns:auto auto 1fr auto;gap:10px;align-items:center;position:relative}
-    .brand h1{font-size:1.2rem;line-height:1.1}.brand p{font-size:.75rem;opacity:.9}
-    .menu{display:none;background:transparent;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:10px;width:38px;height:38px;cursor:pointer}
-    .nav{display:flex;gap:8px;justify-content:center}
-    .nav-btn,.btn,.icon{position:relative;overflow:hidden;border-radius:10px;border:1px solid transparent;cursor:pointer;transition:.25s}
-    .nav-btn{padding:8px 12px;background:transparent;color:#fff;font-weight:600}
-    .nav-btn.active,.nav-btn:hover{background:rgba(255,255,255,.16)}
-    .btn{padding:9px 12px;font-weight:700;background:var(--navy);color:#fff;box-shadow:0 8px 16px rgba(16,42,74,.18)}
-    .btn:hover{transform:translateY(-1px);filter:brightness(1.05)}
-    .btn.ghost{background:#fff;color:var(--navy);border-color:#cdd9eb;box-shadow:0 4px 10px rgba(16,42,74,.08)}
-    .btn.danger{background:var(--danger)}
-    .btn.sm{padding:7px 10px;font-size:.82rem}
-    .main{max-width:1200px;width:100%;margin:auto;padding:18px 14px 26px;flex:1}
-    .page{display:none;opacity:0;transform:translateX(12px)}
-    .page.active{display:block;animation:slide .35s ease forwards}
-    @keyframes slide{to{opacity:1;transform:none}}
-    .grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:14px}
-    .card,.panel{background:#fff;border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh)}
-    .card{padding:14px;transition:.25s}
-    .card.click{cursor:pointer}.card.click:hover{transform:translateY(-3px) scale(1.01)}
-    .title-sm{font-size:.86rem;color:var(--muted);font-weight:600}.value{color:var(--navy);font-weight:800;font-size:1.85rem}.note{margin-top:6px;font-size:.78rem;color:var(--muted)}
-    .panel{padding:14px}
-    .head{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:12px}
-    h2,h3{color:var(--navy)}
-    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-bottom:10px}
-    .toolbar-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-    .in,.ta{width:100%;border:1px solid #cbd8ea;border-radius:10px;padding:10px 11px;background:#fff;outline:none;transition:.2s;box-shadow:0 2px 8px rgba(16,42,74,.04)}
-    .in:focus,.ta:focus{border-color:#6a90c6;box-shadow:0 0 0 4px rgba(26,63,111,.16)}
-    .ta{min-height:80px;resize:vertical}
-    .search{flex:1;min-width:210px;max-width:420px}
-    .badge{padding:6px 11px;border-radius:999px;background:#e8eef8;color:var(--navy);font-size:.8rem;font-weight:700;border:1px solid #d6e2f3}
-    .clients{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
-    .client,.bill,.recent{background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px;box-shadow:0 7px 14px rgba(16,42,74,.08);transition:.25s;animation:fade .3s ease both}
-    @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-    .client{cursor:pointer}.client:hover,.bill:hover,.recent:hover{transform:translateY(-2px) scale(1.01)}
-    .name{color:var(--navy);font-weight:800;margin-bottom:5px}.meta{font-size:.83rem;color:var(--muted);margin-bottom:3px;word-break:break-word}.pending{font-weight:800;margin-top:5px}
-    .mini{margin-top:7px;padding-top:7px;border-top:1px dashed #d6e0ef;display:grid;gap:4px}.mini p{font-size:.77rem;color:#47556c;display:flex;justify-content:space-between;gap:8px}
-    .actions{margin-top:8px;display:flex;gap:7px;flex-wrap:wrap}
-    .profile{display:grid;gap:8px}.pname{font-size:1.2rem;color:var(--navy);font-weight:800}.pline{font-size:.92rem;color:#394862}
-    .bills{display:grid;gap:10px}.billhead{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:7px}.billid{font-weight:800;color:var(--navy)}.bdate{font-size:.8rem;color:var(--muted)}
-    .billgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:7px}.billgrid div{border:1px solid #dde8f7;background:#f5f9ff;border-radius:9px;padding:7px}
-    .billgrid p:first-child{font-size:.75rem;color:var(--muted)}.billgrid p:last-child{font-size:.86rem;font-weight:700}
-    .empty{border:1px dashed #cad7ec;border-radius:12px;background:#fafcff;text-align:center;color:var(--muted);padding:22px 14px}.empty b{display:block;color:var(--navy);margin-bottom:4px}
-    .hide{display:none!important}
-    .modal{position:fixed;inset:0;background:rgba(5,12,22,.58);z-index:900;display:flex;align-items:center;justify-content:center;padding:12px;opacity:0;pointer-events:none;transition:.25s}
-    .modal.open{opacity:1;pointer-events:auto}
-    .dialog{width:min(700px,100%);max-height:92vh;overflow:auto;background:#fff;border:1px solid #d5e0ef;border-radius:14px;box-shadow:0 25px 45px rgba(0,0,0,.35);transform:translateY(16px) scale(.98);transition:.25s}
-    .modal.open .dialog{transform:none}.dialog.wide{width:min(980px,100%)}
-    .mhead{position:sticky;top:0;background:var(--navy);color:#fff;padding:11px 13px;display:flex;justify-content:space-between;align-items:center;z-index:2}
-    .mbody{padding:13px;display:grid;gap:11px}
-    .form2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.row{display:grid;gap:6px}.row.full{grid-column:1/-1}.row label{font-size:.82rem;font-weight:700;color:#2f3f57}
-    .mact{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
-    .icon{width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;background:#fff;color:var(--navy);border-color:#cdd9eb;font-size:1.1rem}
-    .items{display:grid;gap:8px}.item{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:8px;align-items:center;border:1px solid #dbe4f3;background:#fbfdff;border-radius:11px;padding:9px}
-    .itotal{padding:10px;border:1px solid #d5e3f8;border-radius:9px;background:#edf3ff;color:var(--navy);font-size:.84rem;font-weight:800;text-align:center}
-    .sum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;border:1px solid #dbe5f4;background:#f7fbff;border-radius:11px;padding:9px}
-    .sumc{border:1px solid #dfe8f6;background:#fff;border-radius:9px;padding:7px;text-align:center}.sumc p:first-child{font-size:.75rem;color:var(--muted)}.sumc p:last-child{font-weight:800;font-size:.9rem}
-    .invoice{border:1px solid #d7e2f2;border-radius:12px;overflow:hidden;background:#fff}.inv-h{background:var(--navy);color:#fff;padding:14px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
-    .inv-h h3{color:#fff;font-size:1.15rem;margin-bottom:4px}.inv-h p{font-size:.82rem}.inv-b{padding:12px}
-    table{width:100%;border-collapse:collapse;margin-bottom:9px}th,td{border:1px solid #dbe5f3;padding:7px;text-align:left;font-size:.83rem}th{background:#f3f8ff;color:var(--navy)}
-    .inv-t{margin-left:auto;width:min(360px,100%);display:grid;gap:5px}.inv-t div{border:1px solid #dbe5f3;border-radius:8px;background:#fbfdff;padding:7px;display:flex;justify-content:space-between;font-size:.83rem}
-    .toasts{position:fixed;right:12px;bottom:12px;z-index:1200;display:grid;gap:8px;width:min(320px,calc(100vw - 20px))}
-    .toast{background:#11243f;color:#fff;border-radius:10px;padding:9px 11px;font-size:.84rem;box-shadow:0 10px 16px rgba(0,0,0,.25);opacity:0;transform:translateY(10px);transition:.25s}
-    .toast.show{opacity:1;transform:none}.toast.ok{background:var(--ok)}.toast.err{background:var(--danger)}
-    .ripple{position:absolute;border-radius:50%;transform:scale(0);animation:rip .6s linear;background:rgba(255,255,255,.5);pointer-events:none}
-    .watermark{
-      position:fixed;left:50%;bottom:8px;transform:translateX(-50%);
-      font-family:"UnifrakturCook","Old English Text MT",serif;
-      font-size:.82rem;color:#07090d;opacity:.72;letter-spacing:.35px;
-      pointer-events:none;user-select:none;z-index:120;
-      white-space:nowrap;
-      display:flex;align-items:center;gap:4px;
-    }
-    .watermark span{
-      opacity:.14;
-      animation:wm-word 4.4s ease-in-out infinite;
-    }
-    .watermark span:nth-child(1){animation-delay:0s}
-    .watermark span:nth-child(2){animation-delay:1.1s}
-    .watermark span:nth-child(3){animation-delay:2.2s}
-    .watermark span:nth-child(4){animation-delay:3.3s}
-    @keyframes wm-word{
-      0%,18%{opacity:.14;transform:translateY(0)}
-      24%,42%{opacity:1;transform:translateY(-1px)}
-      48%,100%{opacity:.14;transform:translateY(0)}
-    }
-    @keyframes rip{to{transform:scale(4);opacity:0}}
-    @media (max-width:860px){.top-in{grid-template-columns:auto auto auto}.menu{display:inline-flex;align-items:center;justify-content:center}.nav{position:absolute;top:100%;left:0;right:0;background:var(--navy);border-top:1px solid rgba(255,255,255,.2);padding:10px 14px;display:grid;gap:8px;transform:scaleY(0);transform-origin:top;opacity:0;pointer-events:none}.nav.open{transform:scaleY(1);opacity:1;pointer-events:auto}.nav-btn{text-align:left;width:100%}.grid2,.billgrid,.sum{grid-template-columns:1fr}.toolbar-right{width:100%}}
-    @media (max-width:720px){.main{padding:12px 8px 20px}.panel,.card{padding:11px}.form2{grid-template-columns:1fr}.item{grid-template-columns:1fr 1fr}.item .iname{grid-column:1/-1}.item .itotal{grid-column:1/2}.item .irem{grid-column:2/3}th,td{font-size:.78rem;padding:6px}}
-    @media (prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choice Seven Star | Invoice System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="logo.png">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- html2canvas for image export -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
+
 <body>
-  <div id="intro" class="intro" aria-hidden="true">
-    <div class="intro-box">
-      <p class="intro-title">Choice Seven Star Invoice</p>
+
+    <!-- Login Page -->
+    <div id="login-view" class="auth-container" style="display: none;">
+        <div class="auth-card">
+            <img src="logo.png" alt="Choice Seven Star Logo" class="auth-logo">
+            <h1>Choice Seven Star</h1>
+            <p>Quality Online Products</p>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label>Admin Email</label>
+                    <input type="email" id="email" class="input-field" placeholder="admin@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="password" class="input-field" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i data-lucide="log-in"></i>
+                    Login
+                </button>
+            </form>
+        </div>
     </div>
-  </div>
 
-  <p class="watermark" aria-label="Developed by: Rabi Bhatti">
-    <span>Developed</span>
-    <span>by:</span>
-    <span>Rabi</span>
-    <span>Bhatti</span>
-  </p>
-
-  <div class="app">
-    <header class="top">
-      <div class="top-in">
-        <div class="brand"><h1>Choice Seven Star Invoice</h1><p>Clients & Billing Management</p></div>
-        <button id="menu" class="menu" aria-label="Toggle menu">Menu</button>
-        <nav id="nav" class="nav">
-          <button class="nav-btn active" data-page="dashboard">Dashboard</button>
-          <button class="nav-btn" data-page="clients">Clients</button>
-        </nav>
-        <button id="addClientTop" class="btn sm">+ Add Client</button>
-      </div>
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <img src="logo.png" alt="Logo"
+                style="width: 35px; height: 35px; object-fit: contain; background: white; border-radius: 8px;">
+            <h2 style="font-size: 18px; margin: 0;">Choice Seven Star</h2>
+        </div>
+        <button id="mobile-theme-toggle" class="btn" style="width: auto; padding: 10px; background: transparent;"><i
+                data-lucide="moon"></i></button>
     </header>
 
-    <main class="main">
-      <section id="dashboard" class="page active">
-        <div class="grid2">
-          <article id="cardPending" class="card click">
-            <p class="title-sm">Total Receivable Amount (Odhar)</p>
-            <p id="sumPending" class="value">Rs 0.00</p>
-            <p class="note">Auto calculated from all clients</p>
-          </article>
-          <article id="cardClients" class="card click">
-            <p class="title-sm">Total Clients</p>
-            <p id="sumClients" class="value">0</p>
-            <p class="note">Tap to view clients list</p>
-          </article>
-        </div>
-
-        <section class="panel">
-          <div class="head">
-            <h2>Recent Clients</h2>
-            <button id="addClientDash" class="btn sm">Add New Client</button>
-          </div>
-          <div id="recentClients" class="clients"></div>
-          <div id="recentEmpty" class="empty hide"><b>No clients yet</b>Add your first client to start billing.</div>
-        </section>
-      </section>
-
-      <section id="clients" class="page">
-        <section class="panel">
-          <div class="head">
-            <h2>Clients List</h2>
-            <button id="addClientList" class="btn sm">+ Add Client</button>
-          </div>
-          <div class="toolbar">
-            <input id="search" class="in search" placeholder="Search by name or phone" />
-            <div class="toolbar-right">
-              <span id="badgeCount" class="badge">0 clients</span>
-              <button id="downloadBackup" class="btn sm" type="button">Download Backup ZIP</button>
-              <button id="uploadBackup" class="btn sm" type="button">Upload Backup ZIP</button>
-              <input id="uploadBackupInput" class="hide" type="file" accept=".zip,application/zip" />
+    <!-- Main App Layout -->
+    <div id="app-view" class="app-layout" style="display: none;">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo-container">
+                <img src="logo.png" alt="Logo" class="sidebar-logo">
+                <h2>Choice Seven Star</h2>
             </div>
-          </div>
-          <div id="clientsGrid" class="clients"></div>
-          <div id="clientsEmpty" class="empty hide"><b>No matching clients</b>Try another search or add a client.</div>
-        </section>
-      </section>
 
-      <section id="profile" class="page">
-        <div class="panel" style="margin-bottom:12px;">
-          <div class="head">
-            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-              <button id="backClients" class="btn ghost sm">Back</button>
-              <h2>Client Profile</h2>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" data-view="dashboard">
+                        <i data-lucide="layout-dashboard"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-view="clients">
+                        <i data-lucide="users"></i>
+                        <span>Clients</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-view="invoices">
+                        <i data-lucide="file-text"></i>
+                        <span>Invoices</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" id="theme-toggle">
+                        <i data-lucide="moon" id="theme-icon"></i>
+                        <span>Toggle Theme</span>
+                    </a>
+                </li>
+            </ul>
+
+            <a href="#" class="nav-link logout-btn" id="logout-link">
+                <i data-lucide="log-out"></i>
+                <span>Logout</span>
+            </a>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+
+            <!-- Dashboard View -->
+            <section id="dashboard-view" class="view-section">
+                <div class="header-section">
+                    <div class="title-area">
+                        <h1>Dashboard Summary</h1>
+                        <p>Welcome back, Admin</p>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i data-lucide="users"></i></div>
+                        <div class="stat-info">
+                            <span>Total Clients</span>
+                            <h2 id="stat-total-clients">0</h2>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i data-lucide="file-text"></i></div>
+                        <div class="stat-info">
+                            <span>Total Invoices</span>
+                            <h2 id="stat-total-invoices">0</h2>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i data-lucide="check-circle" style="color: var(--success-green);"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span>Total Paid</span>
+                            <h2 id="stat-total-paid">Rs 0</h2>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i data-lucide="alert-circle" style="color: var(--danger-red);"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span>Remaining Due</span>
+                            <h2 id="stat-total-remaining">Rs 0</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2>Recent Invoices</h2>
+                        <button class="btn btn-primary" onclick="showView('create-invoice')" style="width: auto;">
+                            <i data-lucide="plus"></i> New Invoice
+                        </button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Inv #</th>
+                                    <th>Client</th>
+                                    <th>Date</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-invoices-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Clients View -->
+            <section id="clients-view" class="view-section" style="display: none;">
+                <div class="header-section">
+                    <div class="title-area">
+                        <h1>Client Management</h1>
+                        <p>Manage your client directory</p>
+                    </div>
+                    <div style="display: flex; gap: 15px; align-items: center;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <input type="text" id="client-search" class="input-field"
+                                placeholder="Search name or phone..." style="width: 250px;">
+                        </div>
+                        <button class="btn btn-primary" id="add-client-btn" style="width: auto;">
+                            <i data-lucide="user-plus"></i> Add Client
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stats-grid" id="client-list">
+                    <!-- Client cards will be injected here -->
+                </div>
+            </section>
+
+            <!-- Client Profile View -->
+            <section id="client-profile-view" class="view-section" style="display: none;">
+                <div class="header-section">
+                    <div class="title-area">
+                        <button class="btn" style="width: auto; padding: 5px; margin-bottom: 10px;"
+                            onclick="showView('clients')">
+                            <i data-lucide="arrow-left"></i> Back to Clients
+                        </button>
+                        <h1 id="prof-client-name">Client Name</h1>
+                        <p id="prof-client-info">Phone: +92 | Address: ...</p>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn" id="prof-edit-btn" style="width: auto; background: #eee;">Edit</button>
+                        <button class="btn btn-primary" id="prof-new-inv-btn" style="width: auto;">New Invoice</button>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <span>Total Due</span>
+                            <h2 id="prof-stat-due">Rs 0</h2>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <span>Total Orders</span>
+                            <h2 id="prof-stat-count">0</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <h3>Invoice History</h3>
+                    <div class="table-container" style="margin-top: 20px;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Inv #</th>
+                                    <th>Date</th>
+                                    <th>Total</th>
+                                    <th>Remaining</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="prof-invoice-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Invoices View -->
+            <section id="invoices-view" class="view-section" style="display: none;">
+                <div class="header-section">
+                    <div class="title-area">
+                        <h1>All Invoices</h1>
+                        <p>Track payments and balances</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="showView('create-invoice')" style="width: auto;">
+                        <i data-lucide="plus"></i> Create Invoice
+                    </button>
+                </div>
+
+                <div class="section-card">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Inv #</th>
+                                    <th>Client</th>
+                                    <th>Date</th>
+                                    <th>Total</th>
+                                    <th>Paid</th>
+                                    <th>Balance</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="all-invoices-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Create Invoice View -->
+            <section id="create-invoice-view" class="view-section" style="display: none;">
+                <div class="header-section">
+                    <div class="title-area">
+                        <button class="btn" style="width: auto; padding: 5px; margin-bottom: 10px;"
+                            onclick="showView('dashboard')">
+                            <i data-lucide="arrow-left"></i> Back to Dashboard
+                        </button>
+                        <h1><span id="invoice-mode-title">Create New</span> Invoice</h1>
+                    </div>
+                </div>
+
+                <div class="invoice-creator-grid">
+                    <div class="section-card">
+                        <div class="form-group">
+                            <label>Select Client</label>
+                            <select id="inv-client-select" class="input-field" required>
+                                <option value="">Choose a client...</option>
+                            </select>
+                        </div>
+
+                        <div style="margin: 30px 0; border-top: 1px solid var(--border-color); padding-top: 20px;">
+                            <h3 style="margin-bottom: 20px;">Products / Items</h3>
+                            <div id="product-rows-container">
+                                <!-- Product rows -->
+                            </div>
+                            <button class="btn" id="add-item-btn"
+                                style="width: auto; background: #eee; border: 1px dashed #999;">
+                                <i data-lucide="plus"></i> Add Product
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="invoice-summary">
+                        <h3>Payment Details</h3>
+                        <div style="margin-top: 25px;">
+                            <div class="summary-item">
+                                <span>Subtotal</span>
+                                <span id="summary-subtotal">Rs 0</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Discount</span>
+                                <input type="number" id="inv-discount" class="input-field" value="0"
+                                    style="width: 100px; padding: 5px; background: rgba(255,255,255,0.1); color: white; border-color: rgba(255,255,255,0.2);">
+                            </div>
+                            <div class="summary-total">
+                                <span>Grand Total</span>
+                                <span id="summary-grand-total">Rs 0</span>
+                            </div>
+
+                            <div class="form-group" style="margin-top: 30px;">
+                                <label style="color: rgba(255,255,255,0.8);">Amount Paid</label>
+                                <input type="number" id="inv-paid" class="input-field" value="0"
+                                    style="background: rgba(255,255,255,1); color: var(--primary-navy);">
+                            </div>
+
+                            <div class="summary-item" style="font-weight: 700;">
+                                <span>Remaining Balance</span>
+                                <span id="summary-remaining">Rs 0</span>
+                            </div>
+
+                            <button id="save-invoice-btn" class="btn btn-primary"
+                                style="background: white; color: var(--primary-navy); margin-top: 30px;">
+                                <i data-lucide="save"></i> Save Invoice
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Bottom Navigation (Mobile Only) -->
+        <nav class="bottom-nav">
+            <a href="#" class="nav-link active" data-view="dashboard">
+                <i data-lucide="layout-dashboard"></i>
+                <span>Home</span>
+            </a>
+            <a href="#" class="nav-link" data-view="clients">
+                <i data-lucide="users"></i>
+                <span>Clients</span>
+            </a>
+            <a href="#" class="nav-link" data-view="invoices">
+                <i data-lucide="file-text"></i>
+                <span>Invoices</span>
+            </a>
+            <a href="#" class="logout-btn" id="mobile-logout">
+                <i data-lucide="log-out"></i>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Client Modal -->
+    <div id="client-modal" class="modal-overlay">
+        <div class="modal">
+            <h2 id="modal-title">Add New Client</h2>
+            <form id="client-form" style="margin-top: 25px;">
+                <input type="hidden" id="client-id">
+                <div class="form-group">
+                    <label>Client Name</label>
+                    <input type="text" id="client-name" class="input-field" placeholder="Full Name" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="client-phone" class="input-field" placeholder="+92 300 1234567" required>
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <input type="text" id="client-address" class="input-field" placeholder="Complete Address" required>
+                </div>
+                <div class="form-group">
+                    <label>Notes (Optional)</label>
+                    <textarea id="client-notes" class="input-field" style="min-height: 100px;"></textarea>
+                </div>
+
+                <div style="display: flex; gap: 15px; margin-top: 30px;">
+                    <button type="button" class="btn" id="close-modal-btn" style="background: #eee;">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Client</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Invoice Preview Modal (Export) -->
+    <div id="invoice-preview-modal" class="modal-overlay">
+        <div class="modal" style="max-width: 800px; padding: 10px;">
+            <div id="invoice-capture-area" style="background: #ffffff !important; padding: 40px; border: 1px solid #eee; width: 800px;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 40px;">
+                    <div>
+                        <img src="logo.png" style="width: 80px; margin-bottom: 10px;">
+                        <h2 style="font-size: 24px; margin: 0;">Choice Seven Star</h2>
+                        <p style="color: #666; font-size: 14px;">Quality Online Products</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <h1 style="font-size: 32px; margin: 0; color: var(--primary-navy);">INVOICE</h1>
+                        <p style="font-weight: 700; margin-top: 5px;" id="prev-inv-number">#CSS-0000</p>
+                        <p style="font-size: 14px; color: #666;" id="prev-inv-date">Date: 2023-01-01</p>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 40px; border-bottom: 2px solid var(--primary-navy); padding-bottom: 20px;">
+                    <h4 style="margin-bottom: 10px; text-transform: uppercase; font-size: 12px; color: #666;">Bill To:
+                    </h4>
+                    <h3 id="prev-client-name" style="margin-bottom: 5px;">Client Name</h3>
+                    <p id="prev-client-phone" style="font-size: 14px;">Phone: +92 300 0000000</p>
+                    <p id="prev-client-address" style="font-size: 14px;">Address: Street 1, CIty</p>
+                </div>
+
+                <table style="margin-bottom: 40px;">
+                    <thead style="background: var(--primary-navy); color: white;">
+                        <tr>
+                            <th style="color: white; padding: 12px;">Product Description</th>
+                            <th style="color: white; padding: 12px; text-align: center;">Price</th>
+                            <th style="color: white; padding: 12px; text-align: center;">Qty</th>
+                            <th style="color: white; padding: 12px; text-align: right;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="prev-items-list">
+                        <!-- Items -->
+                    </tbody>
+                </table>
+
+                <div style="display: flex; justify-content: flex-end;">
+                    <div style="width: 250px;">
+                        <div
+                            style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee;">
+                            <span>Subtotal</span>
+                            <span id="prev-subtotal">Rs 0</span>
+                        </div>
+                        <div
+                            style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee;">
+                            <span>Discount</span>
+                            <span id="prev-discount">Rs 0</span>
+                        </div>
+                        <div
+                            style="display: flex; justify-content: space-between; padding: 12px 0; font-weight: 800; font-size: 18px; color: var(--primary-navy); border-bottom: 2px solid var(--primary-navy);">
+                            <span>Total</span>
+                            <span id="prev-total">Rs 0</span>
+                        </div>
+                        <div
+                            style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee;">
+                            <span>Paid</span>
+                            <span id="prev-paid">Rs 0</span>
+                        </div>
+                        <div
+                            style="display: flex; justify-content: space-between; padding: 8px 0; font-weight: 700; color: var(--danger-red);">
+                            <span>Remaining</span>
+                            <span id="prev-remaining">Rs 0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 60px; text-align: center; border-top: 1px solid #eee; padding-top: 20px;">
+                    <p style="font-size: 12px; color: #999;">Thank you for your business!</p>
+                </div>
             </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;">
-              <button id="editClient" class="btn ghost sm">Edit Client</button>
-              <button id="delClient" class="btn danger sm">Delete Client</button>
-              <button id="newBill" class="btn sm">Generate New Bill</button>
+
+            <div style="padding: 20px; display: flex; gap: 15px; justify-content: center;">
+                <button class="btn"
+                    onclick="document.getElementById('invoice-preview-modal').style.display='none'">Close</button>
+                <button class="btn btn-primary" id="download-inv-img-btn">
+                    <i data-lucide="download"></i> Download as Image
+                </button>
             </div>
-          </div>
-          <div id="profileBox" class="profile"><div class="empty"><b>Select a client</b>Open a client from clients page.</div></div>
         </div>
-
-        <div class="panel">
-          <div class="head"><h3>Bill History</h3></div>
-          <div id="billsList" class="bills"></div>
-          <div id="billsEmpty" class="empty hide"><b>No bills yet</b>Generate the first bill for this client.</div>
-        </div>
-      </section>
-    </main>
-  </div>
-
-  <div id="clientModal" class="modal" aria-hidden="true">
-    <div class="dialog">
-      <div class="mhead"><h3 id="clientModalTitle">Add New Client</h3><button class="icon" data-close="clientModal" aria-label="Close">×</button></div>
-      <form id="clientForm" class="mbody">
-        <input id="clientId" type="hidden" />
-        <div class="form2">
-          <div class="row"><label for="cname">Name</label><input id="cname" class="in" required /></div>
-          <div class="row"><label for="cphone">Phone Number</label><input id="cphone" class="in" required /></div>
-          <div class="row full"><label for="caddr">Address</label><textarea id="caddr" class="ta" required></textarea></div>
-        </div>
-        <div class="mact"><button type="button" class="btn ghost" data-close="clientModal">Cancel</button><button class="btn" type="submit">Save</button></div>
-      </form>
     </div>
-  </div>
 
-  <div id="billModal" class="modal" aria-hidden="true">
-    <div class="dialog wide">
-      <div class="mhead"><h3 id="billModalTitle">Generate New Bill</h3><button class="icon" data-close="billModal" aria-label="Close">×</button></div>
-      <form id="billForm" class="mbody">
-        <input id="billId" type="hidden" />
-        <div class="head" style="margin:0;">
-          <p style="font-size:.85rem;color:var(--muted);">Add products, price, quantity and paid amount.</p>
-          <button id="addItem" type="button" class="btn sm">+ Add Product</button>
-        </div>
-        <div id="items" class="items"></div>
-        <div class="form2">
-          <div class="row"><label for="paid">Paid Amount</label><input id="paid" class="in" type="number" min="0" step="0.01" value="0" /></div>
-        </div>
-        <div class="sum">
-          <div class="sumc"><p>Subtotal</p><p id="subTotal">Rs 0.00</p></div>
-          <div class="sumc"><p>Paid</p><p id="paidShow">Rs 0.00</p></div>
-          <div class="sumc"><p>Remaining</p><p id="remainShow">Rs 0.00</p></div>
-        </div>
-        <div class="mact"><button type="button" class="btn ghost" data-close="billModal">Cancel</button><button class="btn" type="submit">Save Bill</button></div>
-      </form>
+    <!-- Notification Toast -->
+    <div id="toast"
+        style="position: fixed; bottom: 20px; right: 20px; background: var(--primary-navy); color: white; padding: 15px 25px; border-radius: 12px; transition: 0.3s; transform: translateY(100px); opacity: 0; z-index: 3000;">
+        Message goes here
     </div>
-  </div>
 
-  <div id="invoiceModal" class="modal" aria-hidden="true">
-    <div class="dialog wide">
-      <div class="mhead"><h3>Invoice Preview</h3><button class="icon" data-close="invoiceModal" aria-label="Close">×</button></div>
-      <div class="mbody">
-        <div id="invoiceBox" class="invoice"></div>
-        <div class="mact"><button id="downloadPng" class="btn" type="button">Download PNG</button></div>
-      </div>
-    </div>
-  </div>
-
-  <div id="confirmModal" class="modal" aria-hidden="true">
-    <div class="dialog" style="max-width:460px;">
-      <div class="mhead"><h3>Confirm Action</h3><button class="icon" data-close="confirmModal" aria-label="Close">×</button></div>
-      <div class="mbody">
-        <p id="confirmText" style="line-height:1.6;color:#2a3e5b;">Are you sure?</p>
-        <div class="mact"><button id="confirmNo" type="button" class="btn ghost">Cancel</button><button id="confirmYes" type="button" class="btn danger">Delete</button></div>
-      </div>
-    </div>
-  </div>
-
-  <div id="toasts" class="toasts"></div>
-
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
-  <script>
-    (() => {
-      const KEY = 'css_khata_bill_data';
-      const S = { clients: [], selectedClient: null, page: 'dashboard', invoiceBill: null };
-      const R = {
-        intro: document.getElementById('intro'),
-        menu: document.getElementById('menu'), nav: document.getElementById('nav'), navBtns: [...document.querySelectorAll('.nav-btn')],
-        dashboard: document.getElementById('dashboard'), clientsPage: document.getElementById('clients'), profile: document.getElementById('profile'),
-        cardPending: document.getElementById('cardPending'), cardClients: document.getElementById('cardClients'),
-        sumPending: document.getElementById('sumPending'), sumClients: document.getElementById('sumClients'),
-        addClientTop: document.getElementById('addClientTop'), addClientDash: document.getElementById('addClientDash'), addClientList: document.getElementById('addClientList'),
-        recentClients: document.getElementById('recentClients'), recentEmpty: document.getElementById('recentEmpty'),
-        search: document.getElementById('search'), badgeCount: document.getElementById('badgeCount'), clientsGrid: document.getElementById('clientsGrid'), clientsEmpty: document.getElementById('clientsEmpty'),
-        downloadBackup: document.getElementById('downloadBackup'), uploadBackup: document.getElementById('uploadBackup'), uploadBackupInput: document.getElementById('uploadBackupInput'),
-        backClients: document.getElementById('backClients'), editClient: document.getElementById('editClient'), delClient: document.getElementById('delClient'), newBill: document.getElementById('newBill'),
-        profileBox: document.getElementById('profileBox'), billsList: document.getElementById('billsList'), billsEmpty: document.getElementById('billsEmpty'),
-        clientModal: document.getElementById('clientModal'), clientModalTitle: document.getElementById('clientModalTitle'), clientForm: document.getElementById('clientForm'),
-        clientId: document.getElementById('clientId'), cname: document.getElementById('cname'), cphone: document.getElementById('cphone'), caddr: document.getElementById('caddr'),
-        billModal: document.getElementById('billModal'), billModalTitle: document.getElementById('billModalTitle'), billForm: document.getElementById('billForm'), billId: document.getElementById('billId'),
-        addItem: document.getElementById('addItem'), items: document.getElementById('items'), paid: document.getElementById('paid'), subTotal: document.getElementById('subTotal'), paidShow: document.getElementById('paidShow'), remainShow: document.getElementById('remainShow'),
-        invoiceModal: document.getElementById('invoiceModal'), invoiceBox: document.getElementById('invoiceBox'), downloadPng: document.getElementById('downloadPng'),
-        confirmModal: document.getElementById('confirmModal'), confirmText: document.getElementById('confirmText'), confirmNo: document.getElementById('confirmNo'), confirmYes: document.getElementById('confirmYes'),
-        toasts: document.getElementById('toasts')
-      };
-      let onConfirm = null;
-
-      const n = (v) => Number.isFinite(Number(v)) ? Number(v) : 0;
-      const r2 = (v) => Number(n(v).toFixed(2));
-      const rs = (v) => `Rs ${r2(v).toFixed(2)}`;
-      const d = (x) => { const y = new Date(x); return Number.isNaN(y.getTime()) ? '-' : y.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'2-digit'}); };
-      const e = (s) => String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
-      const id = (p) => (crypto && crypto.randomUUID) ? `${p}_${crypto.randomUUID()}` : `${p}_${Date.now()}_${Math.random().toString(16).slice(2,8)}`;
-
-      function toast(msg, type=''){
-        const t=document.createElement('div'); t.className=`toast ${type==='ok'?'ok':type==='err'?'err':''}`; t.textContent=msg; R.toasts.appendChild(t);
-        requestAnimationFrame(()=>t.classList.add('show')); setTimeout(()=>{t.classList.remove('show'); setTimeout(()=>t.remove(),220);},2500);
-      }
-
-      function openM(m){m.classList.add('open');document.body.classList.add('modal-open');}
-      function closeM(m){m.classList.remove('open'); if(!document.querySelector('.modal.open')) document.body.classList.remove('modal-open');}
-      function closeAll(){document.querySelectorAll('.modal.open').forEach(x=>x.classList.remove('open'));document.body.classList.remove('modal-open');}
-
-      function save(){localStorage.setItem(KEY, JSON.stringify({clients:S.clients}));}
-      function recClient(c){c.totalPending=r2(c.bills.reduce((a,b)=>a+Math.max(0,n(b.remainingAmount)),0));}
-      function recAll(){S.clients.forEach(recClient)}
-
-      function billNo(){
-        let b='';
-        do{const t=new Date();b=`BILL-${t.getFullYear()}${String(t.getMonth()+1).padStart(2,'0')}${String(t.getDate()).padStart(2,'0')}-${Math.floor(1000+Math.random()*9000)}`}
-        while(S.clients.some(c=>c.bills.some(x=>x.billId===b)));
-        return b;
-      }
-
-      function normBill(b){
-        const items=(Array.isArray(b.items)?b.items:[]).map(it=>{const price=Math.max(0,r2(it.price));const qty=Math.max(0,Math.floor(n(it.qty)));return{id:it.id||id('item'),name:it.name||'',price,qty,total:r2(price*qty)}}).filter(it=>it.name&&it.qty>0);
-        const total=r2(b.totalAmount||items.reduce((a,i)=>a+i.total,0)); const paid=Math.min(total,Math.max(0,r2(b.paidAmount))); const rem=r2(Math.max(total-paid,0));
-        return {billId:b.billId||billNo(),date:b.date||new Date().toISOString(),items,totalAmount:total,paidAmount:paid,remainingAmount:rem};
-      }
-
-      function normClients(rawClients){
-        return rawClients.map(c=>{
-          const x={id:c.id||id('client'),name:c.name||'',phone:c.phone||'',address:c.address||'',totalPending:0,bills:Array.isArray(c.bills)?c.bills.map(normBill):[]};
-          recClient(x);
-          return x;
-        });
-      }
-
-      function phoneDigits(v){return String(v||'').replace(/\D/g,'');}
-
-      function clientSame(a,b){
-        if(a.id && b.id && a.id===b.id) return true;
-        const an=String(a.name||'').trim().toLowerCase();
-        const bn=String(b.name||'').trim().toLowerCase();
-        const ap=phoneDigits(a.phone);
-        const bp=phoneDigits(b.phone);
-        return !!(an && bn && ap && bp && an===bn && ap===bp);
-      }
-
-      function mergeClientData(currentClients, importedClients){
-        const current = normClients(currentClients);
-        const incoming = normClients(importedClients);
-        let addedClients = 0;
-        let mergedClients = 0;
-        let addedBills = 0;
-
-        incoming.forEach((inc)=>{
-          const target = current.find((cur)=>clientSame(cur, inc));
-          if(!target){
-            current.push(inc);
-            addedClients += 1;
-            addedBills += inc.bills.length;
-            return;
-          }
-
-          mergedClients += 1;
-
-          if(!target.phone && inc.phone) target.phone = inc.phone;
-          if(!target.address && inc.address) target.address = inc.address;
-          if(!target.name && inc.name) target.name = inc.name;
-
-          const billMap = new Map(target.bills.map((b)=>[b.billId, b]));
-          inc.bills.forEach((b)=>{
-            if(!billMap.has(b.billId)){
-              target.bills.push(b);
-              billMap.set(b.billId, b);
-              addedBills += 1;
-            }
-          });
-
-          recClient(target);
-        });
-
-        current.forEach(recClient);
-        return {clients: current, addedClients, mergedClients, addedBills};
-      }
-
-      function load(){
-        try{const raw=localStorage.getItem(KEY); if(!raw){S.clients=[];save();return;} const p=JSON.parse(raw); if(!p||!Array.isArray(p.clients)){S.clients=[];save();return;}
-          S.clients=normClients(p.clients); save();
-        }catch{S.clients=[];save();}
-      }
-
-      const getClient=(idv)=>S.clients.find(c=>c.id===idv)||null;
-      const getBill=(c,bid)=>c?c.bills.find(b=>b.billId===bid)||null:null;
-
-      function setPage(p){
-        S.page=p;
-        R.dashboard.classList.toggle('active',p==='dashboard');
-        R.clientsPage.classList.toggle('active',p==='clients');
-        R.profile.classList.toggle('active',p==='profile');
-        R.navBtns.forEach(b=>{const bp=b.dataset.page; b.classList.toggle('active', p==='profile'?bp==='clients':bp===p)});
-        R.nav.classList.remove('open');
-      }
-
-      function renderDashboard(){
-        recAll();
-        R.sumPending.textContent=rs(S.clients.reduce((a,c)=>a+c.totalPending,0));
-        R.sumClients.textContent=String(S.clients.length);
-        const recent=[...S.clients].sort((a,b)=>b.totalPending-a.totalPending||a.name.localeCompare(b.name)).slice(0,4);
-        if(!recent.length){R.recentClients.innerHTML='';R.recentEmpty.classList.remove('hide');return;}
-        R.recentEmpty.classList.add('hide');
-        R.recentClients.innerHTML=recent.map(c=>`<article class="recent" data-open="${c.id}"><p class="name">${e(c.name)}</p><p class="meta">Phone: ${e(c.phone||'-')}</p><p class="pending">Pending: ${rs(c.totalPending)}</p></article>`).join('');
-      }
-
-      function renderClients(){
-        recAll();
-        const q=R.search.value.trim().toLowerCase();
-        const list=S.clients.filter(c=>c.name.toLowerCase().includes(q)||c.phone.toLowerCase().includes(q));
-        R.badgeCount.textContent=`${list.length} client${list.length===1?'':'s'}`;
-        if(!list.length){R.clientsGrid.innerHTML='';R.clientsEmpty.classList.remove('hide');return;}
-        R.clientsEmpty.classList.add('hide');
-        R.clientsGrid.innerHTML=list.map(c=>{
-          const rb=[...c.bills].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,2);
-          const mini=rb.length?`<div class="mini">${rb.map(b=>`<p><span>${e(b.billId)}</span><span>${rs(b.remainingAmount)}</span></p>`).join('')}</div>`:`<div class="mini"><p><span>No bill history yet</span></p></div>`;
-          return `<article class="client" data-client="${c.id}"><p class="name">${e(c.name)}</p><p class="meta">Phone: ${e(c.phone||'-')}</p><p class="meta">Address: ${e(c.address||'-')}</p><p class="pending">Total Pending: ${rs(c.totalPending)}</p><p class="meta">Bills: ${c.bills.length}</p>${mini}<div class="actions"><button class="btn ghost sm c-edit" data-client="${c.id}">Edit</button><button class="btn danger sm c-del" data-client="${c.id}">Delete</button></div></article>`;
-        }).join('');
-      }
-
-      function renderProfile(){
-        const c=getClient(S.selectedClient);
-        R.editClient.disabled=!c;R.delClient.disabled=!c;R.newBill.disabled=!c;
-        if(!c){R.profileBox.innerHTML='<div class="empty"><b>Select a client</b>Open a client from clients page.</div>';R.billsList.innerHTML='';R.billsEmpty.classList.remove('hide');return;}
-        recClient(c);
-        R.profileBox.innerHTML=`<p class="pname">${e(c.name)}</p><p class="pline"><b>Phone:</b> ${e(c.phone||'-')}</p><p class="pline"><b>Address:</b> ${e(c.address||'-')}</p><p class="pending">Total Pending (Odhar): ${rs(c.totalPending)}</p>`;
-        const bills=[...c.bills].sort((a,b)=>new Date(b.date)-new Date(a.date));
-        if(!bills.length){R.billsList.innerHTML='';R.billsEmpty.classList.remove('hide');return;}
-        R.billsEmpty.classList.add('hide');
-        R.billsList.innerHTML=bills.map(b=>`<article class="bill" data-bill="${e(b.billId)}"><div class="billhead"><p class="billid">${e(b.billId)}</p><p class="bdate">${d(b.date)}</p></div><div class="billgrid"><div><p>Total</p><p>${rs(b.totalAmount)}</p></div><div><p>Paid</p><p>${rs(b.paidAmount)}</p></div><div><p>Remaining</p><p>${rs(b.remainingAmount)}</p></div></div><p class="meta">Items: ${b.items.length}</p><div class="actions"><button class="btn ghost sm b-edit" data-bill="${e(b.billId)}">Edit Bill</button><button class="btn danger sm b-del" data-bill="${e(b.billId)}">Delete Bill</button><button class="btn sm b-dl" data-bill="${e(b.billId)}">Download PNG</button></div></article>`).join('');
-      }
-
-      function renderAll(){renderDashboard();renderClients();renderProfile();}
-
-      function openClientModal(cid=''){
-        R.clientForm.reset();R.clientId.value='';
-        if(cid){const c=getClient(cid);if(!c)return;R.clientModalTitle.textContent='Edit Client';R.clientId.value=c.id;R.cname.value=c.name;R.cphone.value=c.phone;R.caddr.value=c.address;}else{R.clientModalTitle.textContent='Add New Client';}
-        openM(R.clientModal);R.cname.focus();
-      }
-
-      function removeClient(cid){
-        const c=getClient(cid); if(!c) return;
-        const count=c.bills.length;
-        R.confirmText.textContent=`Delete ${c.name}? This will remove ${count} bill${count===1?'':'s'} permanently.`;
-        R.confirmYes.textContent='Delete';
-        R.confirmYes.classList.add('danger');
-        onConfirm=()=>{S.clients=S.clients.filter(x=>x.id!==cid); if(S.selectedClient===cid){S.selectedClient=null;setPage('clients');} save(); renderAll(); toast('Client deleted successfully.','ok');};
-        openM(R.confirmModal);
-      }
-
-      function openProfile(cid){const c=getClient(cid); if(!c){toast('Client not found.','err');return;} S.selectedClient=c.id; renderProfile(); setPage('profile');}
-
-      function addItemRow(item=null){
-        const row=document.createElement('div'); row.className='item';
-        row.innerHTML=`<input class="in iname" placeholder="Product Name" value="${e(item?item.name:'')}" /><input class="in iprice" type="number" min="0" step="0.01" placeholder="Price" value="${item?item.price:''}" /><input class="in iqty" type="number" min="1" step="1" placeholder="Qty" value="${item?item.qty:''}" /><div class="itotal">${rs(item?item.total:0)}</div><button class="icon irem" type="button" aria-label="Remove">×</button>`;
-        R.items.appendChild(row);
-      }
-
-      function calcBill(){
-        const rows=[...R.items.querySelectorAll('.item')];
-        const items=[]; let subtotal=0;
-        rows.forEach(row=>{
-          const name=row.querySelector('.iname').value.trim(); const price=Math.max(0,r2(row.querySelector('.iprice').value)); const qty=Math.max(0,Math.floor(n(row.querySelector('.iqty').value))); const total=r2(price*qty);
-          row.querySelector('.itotal').textContent=rs(total);
-          if(name&&qty>0){items.push({id:id('item'),name,price,qty,total}); subtotal+=total;}
-        });
-        subtotal=r2(subtotal);
-        let paid=Math.max(0,r2(R.paid.value)); if(paid>subtotal){paid=subtotal;R.paid.value=paid.toFixed(2);} const rem=r2(Math.max(subtotal-paid,0));
-        R.subTotal.textContent=rs(subtotal); R.paidShow.textContent=rs(paid); R.remainShow.textContent=rs(rem);
-        return {items,subtotal,paid,rem};
-      }
-
-      function openBillModal(cid,bid=''){
-        const c=getClient(cid); if(!c){toast('Client not found for bill.','err');return;}
-        R.billForm.reset();R.billId.value='';R.items.innerHTML='';R.paid.value='0';
-        if(bid){const b=getBill(c,bid); if(!b){toast('Bill not found.','err');return;} R.billModalTitle.textContent=`Edit Bill - ${b.billId}`;R.billId.value=b.billId; b.items.forEach(addItemRow); if(!b.items.length) addItemRow(); R.paid.value=r2(b.paidAmount).toFixed(2);}else{R.billModalTitle.textContent=`Generate New Bill - ${c.name}`;addItemRow();}
-        S.selectedClient=c.id; calcBill(); openM(R.billModal);
-      }
-
-      function removeBill(cid,bid){
-        const c=getClient(cid); const b=c?getBill(c,bid):null; if(!c||!b)return;
-        R.confirmText.textContent=`Delete ${b.billId}? This action cannot be undone.`;
-        R.confirmYes.textContent='Delete';
-        R.confirmYes.classList.add('danger');
-        onConfirm=()=>{c.bills=c.bills.filter(x=>x.billId!==bid);recClient(c);save();renderAll();toast('Bill deleted and pending updated.','ok');};
-        openM(R.confirmModal);
-      }
-
-      function invoiceHTML(c,b){
-        const rows=b.items.map((it,i)=>`<tr><td>${i+1}</td><td>${e(it.name)}</td><td>${rs(it.price)}</td><td>${it.qty}</td><td>${rs(it.total)}</td></tr>`).join('');
-        return `<div class="inv-h"><div><h3>Choice Seven Star</h3></div><div><p><b>Bill Number:</b> ${e(b.billId)}</p><p><b>Client Name:</b> ${e(c.name)}</p><p><b>Phone No:</b> ${e(c.phone||'-')}</p></div></div><div class="inv-b"><table><thead><tr><th>#</th><th>Product</th><th>Price</th><th>Qty</th><th>Total</th></tr></thead><tbody>${rows}</tbody></table><div class="inv-t"><div><span>Subtotal</span><b>${rs(b.totalAmount)}</b></div><div><span>Paid Amount</span><b>${rs(b.paidAmount)}</b></div><div><span>Remaining Amount</span><b>${rs(b.remainingAmount)}</b></div></div></div>`;
-      }
-
-      async function downloadBackupZip(){
-        if(!window.JSZip){toast('Backup library failed to load.','err');return;}
-        try{
-          const zip = new window.JSZip();
-          const payload = { app:'CSS Khata/Bill', exportedAt:new Date().toISOString(), data:{clients:S.clients} };
-          zip.file('css-khata-backup.json', JSON.stringify(payload, null, 2));
-          const blob = await zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:9}});
-          const a = document.createElement('a');
-          a.href = URL.createObjectURL(blob);
-          a.download = `css-khata-backup-${Date.now()}.zip`;
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-          URL.revokeObjectURL(a.href);
-          toast('Backup ZIP downloaded.','ok');
-        }catch{
-          toast('Failed to create backup ZIP.','err');
-        }
-      }
-
-      async function restoreBackupFromZip(file){
-        if(!file) return;
-        if(!window.JSZip){toast('Backup library failed to load.','err');return;}
-        try{
-          const zip = await window.JSZip.loadAsync(await file.arrayBuffer());
-          const jsonName = Object.keys(zip.files).find(name => !zip.files[name].dir && name.toLowerCase().endsWith('.json'));
-          if(!jsonName){throw new Error('No JSON backup found');}
-          const text = await zip.files[jsonName].async('string');
-          const parsed = JSON.parse(text);
-          const data = parsed && parsed.data && Array.isArray(parsed.data.clients) ? parsed.data : parsed;
-          if(!data || !Array.isArray(data.clients)){throw new Error('Invalid backup structure');}
-
-          R.confirmText.textContent='Merge backup now? Current data will stay, and previous data will be added.';
-          R.confirmYes.textContent='Merge';
-          R.confirmYes.classList.remove('danger');
-          onConfirm=()=>{
-            const merged = mergeClientData(S.clients, data.clients);
-            S.clients = merged.clients;
-            save();
-            renderAll();
-            setPage('dashboard');
-            toast(`Backup merged: +${merged.addedClients} new clients, ${merged.mergedClients} matched clients, +${merged.addedBills} bills.`, 'ok');
-          };
-          openM(R.confirmModal);
-        }catch{
-          toast('Invalid or corrupted backup ZIP file.','err');
-        }finally{
-          R.uploadBackupInput.value = '';
-        }
-      }
-
-      function openInvoice(cid,bid){
-        const c=getClient(cid); const b=c?getBill(c,bid):null; if(!c||!b){toast('Unable to generate invoice preview.','err');return;}
-        R.invoiceBox.innerHTML=invoiceHTML(c,b); S.invoiceBill=b.billId; openM(R.invoiceModal);
-      }
-
-      async function downloadInvoice(){
-        if(!window.html2canvas){toast('Download library failed to load.','err');return;}
-        if(!R.invoiceBox.innerHTML.trim()){toast('Invoice is empty.','err');return;}
-        R.downloadPng.disabled=true; R.downloadPng.textContent='Preparing...';
-        try{const canvas=await window.html2canvas(R.invoiceBox,{scale:2,backgroundColor:'#fff',useCORS:true}); const a=document.createElement('a'); a.href=canvas.toDataURL('image/png'); a.download=`${S.invoiceBill||'invoice'}.png`; document.body.appendChild(a); a.click(); a.remove(); toast('Invoice downloaded successfully.','ok');}
-        catch{toast('Could not download invoice image.','err');}
-        finally{R.downloadPng.disabled=false;R.downloadPng.textContent='Download PNG';}
-      }
-
-      function onClientSave(ev){
-        ev.preventDefault();
-        const cid=R.clientId.value.trim(), name=R.cname.value.trim(), phone=R.cphone.value.trim(), addr=R.caddr.value.trim();
-        if(!name||!phone||!addr){toast('Please fill all client fields.','err');return;}
-        if(cid){const c=getClient(cid); if(!c){toast('Client not found.','err');return;} c.name=name;c.phone=phone;c.address=addr; toast('Client updated successfully.','ok');}
-        else{const c={id:id('client'),name,phone,address:addr,totalPending:0,bills:[]};S.clients.unshift(c);S.selectedClient=c.id;toast('Client added successfully.','ok');}
-        save();renderAll();closeM(R.clientModal);
-      }
-
-      function onBillSave(ev){
-        ev.preventDefault();
-        const c=getClient(S.selectedClient); if(!c){toast('Select a client first.','err');return;}
-        const existing=R.billId.value.trim(); const x=calcBill(); if(!x.items.length||x.subtotal<=0){toast('Add at least one valid product line.','err');return;}
-        const data={billId:existing||billNo(),date:new Date().toISOString(),items:x.items,totalAmount:x.subtotal,paidAmount:x.paid,remainingAmount:x.rem};
-        if(existing){const cur=getBill(c,existing); if(!cur){toast('Bill not found for update.','err');return;} data.date=cur.date; const i=c.bills.findIndex(b=>b.billId===existing); c.bills[i]=data; toast('Bill updated successfully.','ok');}
-        else{c.bills.unshift(data); toast('Bill saved successfully.','ok');}
-        recClient(c);save();renderAll();closeM(R.billModal);setPage('profile');
-      }
-
-      function ripple(ev){
-        const b=ev.target.closest('.btn,.icon,.nav-btn,.card.click'); if(!b) return;
-        const rect=b.getBoundingClientRect(), s=Math.max(rect.width,rect.height), x=ev.clientX-rect.left-s/2, y=ev.clientY-rect.top-s/2;
-        const sp=document.createElement('span'); sp.className='ripple'; sp.style.width=`${s}px`; sp.style.height=`${s}px`; sp.style.left=`${x}px`; sp.style.top=`${y}px`; b.appendChild(sp); setTimeout(()=>sp.remove(),620);
-      }
-
-      function bind(){
-        R.menu.addEventListener('click',()=>R.nav.classList.toggle('open'));
-        R.navBtns.forEach(b=>b.addEventListener('click',()=>setPage(b.dataset.page)));
-        R.cardClients.addEventListener('click',()=>setPage('clients')); R.cardPending.addEventListener('click',()=>setPage('clients'));
-        [R.addClientTop,R.addClientDash,R.addClientList].forEach(b=>b.addEventListener('click',()=>openClientModal()));
-        R.recentClients.addEventListener('click',ev=>{const card=ev.target.closest('[data-open]'); if(card) openProfile(card.dataset.open);});
-        R.search.addEventListener('input',renderClients);
-        R.clientsGrid.addEventListener('click',ev=>{
-          const ed=ev.target.closest('.c-edit'); if(ed){ev.stopPropagation();openClientModal(ed.dataset.client);return;}
-          const dl=ev.target.closest('.c-del'); if(dl){ev.stopPropagation();removeClient(dl.dataset.client);return;}
-          const c=ev.target.closest('.client'); if(c) openProfile(c.dataset.client);
-        });
-        R.backClients.addEventListener('click',()=>setPage('clients'));
-        R.editClient.addEventListener('click',()=>S.selectedClient&&openClientModal(S.selectedClient));
-        R.delClient.addEventListener('click',()=>S.selectedClient&&removeClient(S.selectedClient));
-        R.newBill.addEventListener('click',()=>S.selectedClient?openBillModal(S.selectedClient):toast('Select a client first.','err'));
-        R.billsList.addEventListener('click',ev=>{
-          const ed=ev.target.closest('.b-edit'); if(ed){openBillModal(S.selectedClient,ed.dataset.bill);return;}
-          const dl=ev.target.closest('.b-del'); if(dl){removeBill(S.selectedClient,dl.dataset.bill);return;}
-          const dwn=ev.target.closest('.b-dl'); if(dwn){openInvoice(S.selectedClient,dwn.dataset.bill);}
-        });
-        R.clientForm.addEventListener('submit',onClientSave); R.billForm.addEventListener('submit',onBillSave);
-        R.addItem.addEventListener('click',()=>{addItemRow();calcBill();});
-        R.items.addEventListener('input',calcBill);
-        R.items.addEventListener('click',ev=>{const rm=ev.target.closest('.irem'); if(!rm) return; const rows=R.items.querySelectorAll('.item'); if(rows.length<=1){const row=rows[0]; row.querySelector('.iname').value='';row.querySelector('.iprice').value='';row.querySelector('.iqty').value='';} else rm.closest('.item').remove(); calcBill();});
-        R.paid.addEventListener('input',calcBill);
-        R.downloadPng.addEventListener('click',downloadInvoice);
-        R.downloadBackup.addEventListener('click',downloadBackupZip);
-        R.uploadBackup.addEventListener('click',()=>R.uploadBackupInput.click());
-        R.uploadBackupInput.addEventListener('change',ev=>restoreBackupFromZip(ev.target.files && ev.target.files[0]));
-        document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>{const m=document.getElementById(b.dataset.close);if(m)closeM(m);}));
-        document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',ev=>{if(ev.target===m)closeM(m);}));
-        R.confirmNo.addEventListener('click',()=>{onConfirm=null;closeM(R.confirmModal)});
-        R.confirmYes.addEventListener('click',()=>{const cb=onConfirm;onConfirm=null;closeM(R.confirmModal); if(typeof cb==='function') cb();});
-        document.addEventListener('keydown',ev=>{if(ev.key==='Escape')closeAll();});
-        document.addEventListener('click',ripple);
-      }
-
-      function init(){load();bind();renderAll();}
-      function runIntro(){
-        document.body.classList.add('intro-active');
-        setTimeout(()=>{
-          if(R.intro) R.intro.classList.add('done');
-          document.body.classList.remove('intro-active');
-        },3000);
-      }
-      init();
-      runIntro();
-    })();
-  </script>
+    <script src="supabase.js"></script>
+    <script src="app.js"></script>
 </body>
+
 </html>
-
-
